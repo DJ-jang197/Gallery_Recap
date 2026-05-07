@@ -29,6 +29,24 @@ const Survey = ({ onComplete }) => {
       : "How would you describe your last two weeks?";
   };
 
+  const [adjectives, setAdjectives] = useState([]);
+  const availableAdjectives = [
+    'Peaceful', 'Hectic', 'Magical', 'Ordinary', 'Productive', 
+    'Adventurous', 'Nostalgic', 'Melancholic', 'Joyful', 'Quiet'
+  ];
+
+  const handleToggleAdjective = (adj) => {
+    setAdjectives(prev => prev.includes(adj) ? prev.filter(a => a !== adj) : [...prev, adj]);
+  };
+
+  const handleCustomAdjective = (e) => {
+    if (e.key === 'Enter' && e.target.value.trim()) {
+      e.preventDefault();
+      handleToggleAdjective(e.target.value.trim());
+      e.target.value = '';
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     
@@ -38,7 +56,8 @@ const Survey = ({ onComplete }) => {
       social: scores.social,
       stress: scores.stress,
       reflection,
-      wantsVerse
+      wantsVerse,
+      adjectives // Include the bubbles!
     };
 
     onComplete(surveyState);
@@ -67,6 +86,28 @@ const Survey = ({ onComplete }) => {
       <p className="subtitle">Reflect on your inner state.</p>
 
       <form className="survey-form" onSubmit={handleSubmit}>
+        <div className="rating-group">
+          <label>The Vibe</label>
+          <div className="adjective-grid">
+            {availableAdjectives.map(adj => (
+              <button
+                key={adj}
+                type="button"
+                className={`adj-bubble ${adjectives.includes(adj) ? 'active' : ''}`}
+                onClick={() => handleToggleAdjective(adj)}
+              >
+                {adj}
+              </button>
+            ))}
+            <input 
+              type="text" 
+              placeholder="+ Other"
+              className="adj-input"
+              onKeyDown={handleCustomAdjective}
+            />
+          </div>
+        </div>
+
         <div className="rating-group">
           <label>Energy Level</label>
           {renderScale('energy')}

@@ -27,41 +27,46 @@ public class GeminiNarratorService {
     /**
      * Synthesizes the narrative using real AI or mock fallback.
      */
-    public String synthesizeNarrative(Map<String, Integer> scores, String reflection, List<Map<String, String>> metadata) {
+    /**
+     * Synthesizes the narrative using real AI (Vision + Text) or mock fallback.
+     */
+    public String synthesizeNarrative(Map<String, Object> scores, String reflection, List<Map<String, String>> metadata, List<String> images) {
         String cleanKey = apiKey.trim();
         
-        System.out.println("[Siel Kernel] Attempting synthesis. Key configured: " + (!"YOUR_API_KEY_HERE".equals(cleanKey)));
+        System.out.println("[Siel Kernel] Attempting Multimodal Synthesis...");
 
         if ("YOUR_API_KEY_HERE".equals(cleanKey) || cleanKey.isEmpty()) {
-            System.out.println("[Siel Kernel] API Key missing. Falling back to Mock Template.");
             return generateMockResponse();
         }
 
         try {
             String prompt = buildPrompt(scores, reflection, metadata);
-            System.out.println("[Siel Kernel] Sending prompt to Gemini...");
-            return callGemini(prompt, cleanKey);
+            System.out.println("[Siel Kernel] Sending Visual Prompt to Gemini...");
+            return callGemini(prompt, cleanKey, images);
         } catch (Exception e) {
             System.err.println("[Siel Kernel] ERROR calling Gemini: " + e.getMessage());
-            return "Error calling AI: " + e.getMessage() + ". Check your console logs.";
+            return "Error calling AI: " + e.getMessage();
         }
     }
 
-    private String buildPrompt(Map<String, Integer> scores, String reflection, List<Map<String, String>> metadata) {
+    private String buildPrompt(Map<String, Object> scores, String reflection, List<Map<String, String>> metadata) {
         String metadataSummary = metadata == null || metadata.isEmpty() 
-            ? "No specific photo metadata provided." 
-            : metadata.stream()
-                .map(m -> String.format("- Photo at %s taken on %s", m.get("location"), m.get("dateTaken")))
+            ? "" 
+            : "PHOTO METADATA:\n" + metadata.stream()
+                .map(m -> String.format("- %s at %s", m.get("dateTaken"), m.get("location")))
                 .collect(Collectors.joining("\n"));
 
+        Object adjObj = scores.get("adjectives");
+        String adjList = adjObj instanceof List ? String.join(", ", (List<String>) adjObj) : "None";
+
         return String.format(
-            "System Instruction: You are Siel, a privacy-first digital biographer. " +
-            "Your task is to ghostwrite a short, poetic life journal entry. " +
-            "CRITICAL DIRECTIVE: Do NOT mention any numbers, scores, or the 1-5 scale. " +
-            "Synthesize the Energy (%d/5), Social (%d/5), and Stress (%d/5) levels into natural prose. " +
-            "OBJECTIVE PHOTO METADATA:\n%s\n\n" +
-            "USER REFLECTION: '%s'\n\n" +
-            "Begin journal entry (write in first person, refer to the locations/times if relevant):",
+            "You are Siel, a privacy-first biographer. Write a first-person poetic journal entry. " +
+            "Look at the attached photos and the metadata to find the soul of the day. " +
+            "VIBE WORDS: %s. ENERGY: %s/5. SOCIAL: %s/5. STRESS: %s/5. " +
+            "%s\n" +
+            "USER REFLECTION: '%s'\n" +
+            "Write the entry now (be evocative, do not mention scores):",
+            adjList,
             scores.getOrDefault("energy", 3),
             scores.getOrDefault("social", 3),
             scores.getOrDefault("stress", 3),
@@ -70,23 +75,36 @@ public class GeminiNarratorService {
         );
     }
 
-    private String callGemini(String prompt, String cleanKey) throws Exception {
+    private String callGemini(String prompt, String cleanKey, List<String> images) throws Exception {
         String fullUrl = apiUrl + "?key=" + cleanKey;
-        System.out.println("[Siel Kernel] Calling Gemini API at: " + apiUrl);
         URL url = new URL(fullUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");
-        conn.setConnectTimeout(60000); // 60s timeout
+        conn.setConnectTimeout(60000);
         conn.setReadTimeout(60000);
         conn.setDoOutput(true);
 
-        // Sanitize prompt for JSON
+        // Construct Multimodal JSON manually to avoid heavy dependencies
+        StringBuilder json = new StringBuilder();
+        json.append("{\"contents\": [{\"parts\": [");
+        
+        // 1. Add Text Part
         String escapedPrompt = prompt.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n");
-        String jsonBody = "{\"contents\": [{\"parts\": [{\"text\": \"" + escapedPrompt + "\"}]}]}";
+        json.append("{\"text\": \"").append(escapedPrompt).append("\"}");
+        
+        // 2. Add Image Parts
+        if (images != null) {
+            for (String base64 : images) {
+                json.append(", {\"inline_data\": {\"mime_type\": \"image/jpeg\", \"data\": \"")
+                    .append(base64).append("\"}}");
+            }
+        }
+        
+        json.append("]}]}");
 
         try (OutputStream os = conn.getOutputStream()) {
-            byte[] input = jsonBody.getBytes("utf-8");
+            byte[] input = json.toString().getBytes("utf-8");
             os.write(input, 0, input.length);
         }
 
@@ -94,7 +112,6 @@ public class GeminiNarratorService {
              try (Scanner scanner = new Scanner(conn.getErrorStream(), "utf-8")) {
                 scanner.useDelimiter("\\A");
                 String error = scanner.hasNext() ? scanner.next() : "";
-                System.err.println("[Siel Kernel] Gemini API Error: " + error);
                 throw new Exception("HTTP " + conn.getResponseCode() + ": " + error);
              }
         }
@@ -102,21 +119,15 @@ public class GeminiNarratorService {
         try (Scanner scanner = new Scanner(conn.getInputStream(), "utf-8")) {
             scanner.useDelimiter("\\A");
             String response = scanner.hasNext() ? scanner.next() : "";
-            System.out.println("[Siel Kernel] Gemini API Success. Extracting narrative...");
             
-            // High-Stability Parser: Walk through the JSON to find the "text" field content
-            // This is safer than Regex for very large or complex AI responses
+            // Extract narrative from JSON
             String searchKey = "\"text\": \"";
             int startIdx = response.indexOf(searchKey);
-            if (startIdx == -1) {
-                System.err.println("[Siel Kernel] 'text' field not found in response.");
-                return "Error: AI response structure was unexpected.";
-            }
+            if (startIdx == -1) return "Error: AI response malformed.";
             
             startIdx += searchKey.length();
             StringBuilder sb = new StringBuilder();
             boolean escaped = false;
-            
             for (int i = startIdx; i < response.length(); i++) {
                 char c = response.charAt(i);
                 if (escaped) {
@@ -128,20 +139,12 @@ public class GeminiNarratorService {
                 } else if (c == '\\') {
                     escaped = true;
                 } else if (c == '\"') {
-                    // Reached the end of the string
                     break;
                 } else {
                     sb.append(c);
                 }
             }
-            
-            String narrative = sb.toString().trim();
-            if (narrative.isEmpty()) {
-                System.err.println("[Siel Kernel] Extracted narrative was empty. Raw: " + response);
-                return "The AI produced an empty response. Please try again.";
-            }
-            
-            return narrative;
+            return sb.toString().trim();
         }
     }
 

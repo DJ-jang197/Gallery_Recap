@@ -26,18 +26,29 @@ function App() {
   const { addEntryToLibrary } = useContext(LibraryContext);
 
   const [metadataList, setMetadataList] = useState([]);
+  const [photoFiles, setPhotoFiles] = useState([]);
 
-  const handleUploadComplete = (extractedMetadata) => {
+  const handleUploadComplete = (extractedMetadata, originalFiles) => {
     setMetadataList(extractedMetadata);
+    setPhotoFiles(originalFiles);
     setCurrentStep(STEPS.SURVEY);
   };
 
+  const fileToBase64 = (file) => new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+  });
+
   const handleSurveyComplete = async (surveyState) => {
     setSurveyData(surveyState);
-    setCurrentStep(STEPS.SYNTHESIS); // Move to synthesis view immediately
+    setCurrentStep(STEPS.SYNTHESIS);
     setSynthesizedContent("Analyzing your metadata and crafting your narrative...");
 
     try {
+      const imagePromises = photoFiles.slice(0, 10).map(f => fileToBase64(f));
+      const base64Images = await Promise.all(imagePromises);
+
       const response = await fetch('http://localhost:8080/api/synthesize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -45,10 +56,12 @@ function App() {
           scores: {
             energy: surveyState.energy,
             social: surveyState.social,
-            stress: surveyState.stress
+            stress: surveyState.stress,
+            adjectives: surveyState.adjectives || []
           },
           reflection: surveyState.reflection,
-          metadata: metadataList 
+          metadata: metadataList,
+          images: base64Images
         })
       });
 

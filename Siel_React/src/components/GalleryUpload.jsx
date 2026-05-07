@@ -53,8 +53,8 @@ const GalleryUpload = ({ onComplete }) => {
       setFiles(validFiles);
       setUploading(false);
       
-      // Pass metadata back to App
-      onComplete(metadataList);
+      // Pass both metadata and files back to App
+      onComplete(metadataList, validFiles);
     }
   };
 

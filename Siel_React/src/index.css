@@ -99,6 +99,54 @@ html, body {
   font-size: 20px;
 }
 
+.adjective-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.adj-bubble {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(73, 101, 128, 0.1);
+  background: white;
+  color: var(--deep-slate);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.adj-bubble:hover {
+  background: #f8fafc;
+  transform: translateY(-1px);
+}
+
+.adj-bubble.active {
+  background: var(--deep-slate);
+  color: white;
+  border-color: var(--deep-slate);
+  box-shadow: 0 4px 12px rgba(73, 101, 128, 0.2);
+}
+
+.adj-input {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px dashed rgba(73, 101, 128, 0.3);
+  background: transparent;
+  width: 100px;
+  font-size: 13px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.adj-input:focus {
+  width: 140px;
+  border-style: solid;
+  border-color: var(--deep-slate);
+}
+
 /* --- Mobile Frame Adjustments --- */
 @media (max-width: 600px) {
   .app-header {

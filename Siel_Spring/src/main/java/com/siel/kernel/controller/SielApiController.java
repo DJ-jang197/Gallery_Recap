@@ -26,12 +26,13 @@ public class SielApiController {
     @PostMapping("/synthesize")
     public Map<String, String> synthesize(@RequestBody Map<String, Object> request) {
         // Extract data from request
-        Map<String, Integer> scores = (Map<String, Integer>) request.get("scores");
+        Map<String, Object> scores = (Map<String, Object>) request.get("scores");
         String reflection = (String) request.get("reflection");
         List<Map<String, String>> metadata = (List<Map<String, String>>) request.get("metadata");
+        List<String> images = (List<String>) request.get("images");
         
-        // Call the service with metadata
-        String narrative = narratorService.synthesizeNarrative(scores, reflection, metadata);
+        // Call the service with metadata and images
+        String narrative = narratorService.synthesizeNarrative(scores, reflection, metadata, images);
         
         return Map.of("narrative", narrative);
     }
