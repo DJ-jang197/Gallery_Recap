@@ -25,21 +25,46 @@ function App() {
 
   const { addEntryToLibrary } = useContext(LibraryContext);
 
-  const handleUploadComplete = () => {
+  const [metadataList, setMetadataList] = useState([]);
+
+  const handleUploadComplete = (extractedMetadata) => {
+    setMetadataList(extractedMetadata);
     setCurrentStep(STEPS.SURVEY);
   };
 
-  const handleSurveyComplete = (surveyState) => {
+  const handleSurveyComplete = async (surveyState) => {
     setSurveyData(surveyState);
-    
-    let mockProse = `The last two weeks have been a testament to your quiet resilience. While your energy levels dipped slightly during the mid-period, the photos from your gallery reveal moments of unexpected joy—a shared coffee, a sunset walk. Your reflection on "${surveyState.reflection}" suggests you're moving toward a place of deeper clarity.`;
-    
-    if (surveyState.wantsVerse) {
-      mockProse += "\n\n---\n\"The Lord is my shepherd; I shall not want. He makes me lie down in green pastures. He leads me beside still waters.\" (Psalm 23:1-2 NIV)";
+    setCurrentStep(STEPS.SYNTHESIS); // Move to synthesis view immediately
+    setSynthesizedContent("Analyzing your metadata and crafting your narrative...");
+
+    try {
+      const response = await fetch('http://localhost:8080/api/synthesize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          scores: {
+            energy: surveyState.energy,
+            social: surveyState.social,
+            stress: surveyState.stress
+          },
+          reflection: surveyState.reflection,
+          // We can also pass metadataList here if we want Gemini to see it
+          metadata: surveyState.metadataList 
+        })
+      });
+
+      const data = await response.json();
+      let prose = data.narrative;
+      
+      if (surveyState.wantsVerse) {
+        prose += "\n\n---\n\"The Lord is my shepherd; I shall not want. He makes me lie down in green pastures. He leads me beside still waters.\" (Psalm 23:1-2 NIV)";
+      }
+      
+      setSynthesizedContent(prose);
+    } catch (error) {
+      console.error("AI Synthesis failed:", error);
+      setSynthesizedContent("I encountered an error connecting to the Siel Kernel. Please ensure your Java backend is running.");
     }
-    
-    setSynthesizedContent(mockProse);
-    setCurrentStep(STEPS.SYNTHESIS);
   };
 
   // Called from SynthesisResult when "Complete Reflection" is clicked

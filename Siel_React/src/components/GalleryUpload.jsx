@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+import EXIF from 'exif-js';
 import './GalleryUpload.css';
 
 /**
  * Component for uploading gallery photos to initiate metadata extraction.
- * Now includes a Strict Date Filter to ensure photos are within the selected cadence.
+ * Extracts EXIF data (Date Taken, Location) to feed into the AI narrator.
  */
 const GalleryUpload = ({ onComplete }) => {
   const [uploading, setUploading] = useState(false);
@@ -11,34 +12,49 @@ const GalleryUpload = ({ onComplete }) => {
   const [files, setFiles] = useState([]);
   const [excludedCount, setExcludedCount] = useState(0);
 
-  const handleFileChange = (e) => {
+  const extractMetadata = (file) => {
+    return new Promise((resolve) => {
+      EXIF.getData(file, function() {
+        const dateTaken = EXIF.getTag(this, "DateTimeOriginal");
+        const lat = EXIF.getTag(this, "GPSLatitude");
+        const lon = EXIF.getTag(this, "GPSLongitude");
+        
+        resolve({
+          fileName: file.name,
+          dateTaken: dateTaken || new Date(file.lastModified).toISOString(),
+          location: lat ? `${lat}, ${lon}` : "Unknown Location"
+        });
+      });
+    });
+  };
+
+  const handleFileChange = async (e) => {
     const selectedFiles = Array.from(e.target.files);
-    
-    // Determine the cadence timeframe
     const cadence = localStorage.getItem('siel_cadence') || 'biweekly';
     const daysLimit = cadence === 'monthly' ? 30 : 14;
     const timeLimit = Date.now() - (daysLimit * 24 * 60 * 60 * 1000);
 
-    // Filter files based on lastModified date (Proxy for EXIF Date Taken)
     const validFiles = selectedFiles.filter(file => file.lastModified >= timeLimit);
     const excluded = selectedFiles.length - validFiles.length;
 
-    setFiles(validFiles);
     setExcludedCount(excluded);
     
     if (validFiles.length > 0) {
-      // Simulate extraction process
       setUploading(true);
-      setExcludedCount(excluded);
-      let currentProgress = 0;
-      const interval = setInterval(() => {
-        currentProgress += 10;
-        setProgress(currentProgress);
-        if (currentProgress >= 100) {
-          clearInterval(interval);
-          setUploading(false);
-        }
-      }, 200);
+      
+      // Real extraction
+      const metadataList = [];
+      for (let i = 0; i < validFiles.length; i++) {
+        const meta = await extractMetadata(validFiles[i]);
+        metadataList.push(meta);
+        setProgress(Math.round(((i + 1) / validFiles.length) * 100));
+      }
+
+      setFiles(validFiles);
+      setUploading(false);
+      
+      // Pass metadata back to App
+      onComplete(metadataList);
     }
   };
 
@@ -56,7 +72,7 @@ const GalleryUpload = ({ onComplete }) => {
           disabled={uploading}
         />
         <div className="drop-content">
-          <p>{files.length > 0 ? `${files.length} photos accepted` : 'Click to select gallery photos'}</p>
+          <p>{uploading ? `Extracting ${progress}%` : files.length > 0 ? `${files.length} photos accepted` : 'Click to select gallery photos'}</p>
           {excludedCount > 0 && (
             <p className="excluded-hint">
               {excludedCount} photos excluded (outside your {localStorage.getItem('siel_cadence') || 'biweekly'} window)
@@ -73,9 +89,10 @@ const GalleryUpload = ({ onComplete }) => {
       <button 
         className="next-btn" 
         disabled={files.length === 0 || uploading}
-        onClick={onComplete}
+        onClick={() => {}} // Now handled automatically after extraction
+        style={{ display: files.length > 0 && !uploading ? 'block' : 'none' }}
       >
-        Analyze Sentiment
+        Continue to Survey
       </button>
     </div>
   );
