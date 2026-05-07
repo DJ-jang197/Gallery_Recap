@@ -75,6 +75,8 @@ public class GeminiNarratorService {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");
+        conn.setConnectTimeout(15000); // 15s timeout
+        conn.setReadTimeout(15000);
         conn.setDoOutput(true);
 
         // Sanitize prompt for JSON
@@ -98,12 +100,17 @@ public class GeminiNarratorService {
             scanner.useDelimiter("\\A");
             String response = scanner.hasNext() ? scanner.next() : "";
             
-            // Extract text from Gemini response structure
+            // Extract text from Gemini response structure: candidates[0].content.parts[0].text
             int start = response.indexOf("\"text\": \"") + 9;
-            int end = response.indexOf("\"", start);
-            if (start < 9 || end < 0) return "AI returned an unexpected format. Response: " + response;
+            int end = response.lastIndexOf("\"");
+            // Find the quote closing the text part specifically
+            // This is a simple parser, real JSON lib would be better but keeping it low-dep
+            String fragment = response.substring(start);
+            int closingQuote = fragment.indexOf("\"");
             
-            return response.substring(start, end).replace("\\n", "\n").replace("\\\"", "\"");
+            if (start < 9 || closingQuote < 0) return "AI returned an unexpected format. Response: " + response;
+            
+            return fragment.substring(0, closingQuote).replace("\\n", "\n").replace("\\\"", "\"");
         }
     }
 
