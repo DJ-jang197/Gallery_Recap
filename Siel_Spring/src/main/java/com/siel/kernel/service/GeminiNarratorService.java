@@ -75,8 +75,8 @@ public class GeminiNarratorService {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");
-        conn.setConnectTimeout(15000); // 15s timeout
-        conn.setReadTimeout(15000);
+        conn.setConnectTimeout(30000); // Increased to 30s
+        conn.setReadTimeout(30000);
         conn.setDoOutput(true);
 
         // Sanitize prompt for JSON
@@ -92,6 +92,7 @@ public class GeminiNarratorService {
              try (Scanner scanner = new Scanner(conn.getErrorStream(), "utf-8")) {
                 scanner.useDelimiter("\\A");
                 String error = scanner.hasNext() ? scanner.next() : "";
+                System.err.println("[Siel Kernel] Gemini API Error: " + error);
                 throw new Exception("HTTP " + conn.getResponseCode() + ": " + error);
              }
         }
@@ -99,6 +100,7 @@ public class GeminiNarratorService {
         try (Scanner scanner = new Scanner(conn.getInputStream(), "utf-8")) {
             scanner.useDelimiter("\\A");
             String response = scanner.hasNext() ? scanner.next() : "";
+            System.out.println("[Siel Kernel] Gemini API Success. Parsing response...");
             
             // Extract text from Gemini response structure: candidates[0].content.parts[0].text
             int start = response.indexOf("\"text\": \"") + 9;
