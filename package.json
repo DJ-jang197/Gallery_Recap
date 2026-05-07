@@ -6,11 +6,11 @@
     "install:all": "npm install --prefix Auth && npm install --prefix Siel_React",
     "build:auth": "npm run build --prefix Auth",
     "build:react": "npm run build --prefix Siel_React",
-    "build:spring": "powershell -Command \"$env:JAVA_HOME = '$pwd\\.jdk\\jdk-17.0.11+9'; $env:Path = \\\"$env:JAVA_HOME\\bin;$env:Path\\\"; cd Siel_Spring; .\\mvnw clean package -DskipTests\"",
+    "build:spring": "powershell -ExecutionPolicy Bypass -File .\\start-backend.ps1 -Build",
     "build:all": "npm run build:auth && npm run build:react && npm run build:spring",
     "dev:auth": "npm run dev --prefix Auth",
     "dev:react": "npm run dev --prefix Siel_React",
-    "dev:spring": "powershell -Command \"$env:JAVA_HOME = '$pwd\\.jdk\\jdk-17.0.11+9'; $env:Path = \\\"$env:JAVA_HOME\\bin;$env:Path\\\"; cd Siel_Spring; .\\mvnw spring-boot:run\""
+    "dev:spring": "powershell -ExecutionPolicy Bypass -File .\\start-backend.ps1"
   },
   "author": "Antigravity",
   "license": "MIT"
