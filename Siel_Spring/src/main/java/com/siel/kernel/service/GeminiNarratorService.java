@@ -102,19 +102,46 @@ public class GeminiNarratorService {
         try (Scanner scanner = new Scanner(conn.getInputStream(), "utf-8")) {
             scanner.useDelimiter("\\A");
             String response = scanner.hasNext() ? scanner.next() : "";
-            System.out.println("[Siel Kernel] Gemini API Success. Parsing response...");
+            System.out.println("[Siel Kernel] Gemini API Success. Extracting narrative...");
             
-            // Extract text from Gemini response structure: candidates[0].content.parts[0].text
-            int start = response.indexOf("\"text\": \"") + 9;
-            int end = response.lastIndexOf("\"");
-            // Find the quote closing the text part specifically
-            // This is a simple parser, real JSON lib would be better but keeping it low-dep
-            String fragment = response.substring(start);
-            int closingQuote = fragment.indexOf("\"");
+            // High-Stability Parser: Walk through the JSON to find the "text" field content
+            // This is safer than Regex for very large or complex AI responses
+            String searchKey = "\"text\": \"";
+            int startIdx = response.indexOf(searchKey);
+            if (startIdx == -1) {
+                System.err.println("[Siel Kernel] 'text' field not found in response.");
+                return "Error: AI response structure was unexpected.";
+            }
             
-            if (start < 9 || closingQuote < 0) return "AI returned an unexpected format. Response: " + response;
+            startIdx += searchKey.length();
+            StringBuilder sb = new StringBuilder();
+            boolean escaped = false;
             
-            return fragment.substring(0, closingQuote).replace("\\n", "\n").replace("\\\"", "\"");
+            for (int i = startIdx; i < response.length(); i++) {
+                char c = response.charAt(i);
+                if (escaped) {
+                    if (c == 'n') sb.append('\n');
+                    else if (c == '\"') sb.append('\"');
+                    else if (c == '\\') sb.append('\\');
+                    else sb.append('\\').append(c);
+                    escaped = false;
+                } else if (c == '\\') {
+                    escaped = true;
+                } else if (c == '\"') {
+                    // Reached the end of the string
+                    break;
+                } else {
+                    sb.append(c);
+                }
+            }
+            
+            String narrative = sb.toString().trim();
+            if (narrative.isEmpty()) {
+                System.err.println("[Siel Kernel] Extracted narrative was empty. Raw: " + response);
+                return "The AI produced an empty response. Please try again.";
+            }
+            
+            return narrative;
         }
     }
 
