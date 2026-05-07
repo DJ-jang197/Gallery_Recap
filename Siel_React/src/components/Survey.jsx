@@ -24,9 +24,9 @@ const Survey = ({ onComplete }) => {
   };
 
   const getPrompt = () => {
-    return cadence === 'biweekly' 
-      ? "How would you describe your last two weeks?" 
-      : "What defined your journey this month?";
+    return cadence === 'monthly' 
+      ? "How would you describe your last month?" 
+      : "How would you describe your last two weeks?";
   };
 
   const handleSubmit = (e) => {
@@ -87,7 +87,7 @@ const Survey = ({ onComplete }) => {
           <textarea 
             value={reflection}
             onChange={(e) => setReflection(e.target.value)}
-            placeholder="Write your thoughts here..."
+            placeholder="Adjectives or simple phrases work best (e.g. Grateful, Hectic, Growth)"
             required
           />
         </div>
