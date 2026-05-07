@@ -13,6 +13,7 @@ function App() {
   const [currentStep, setCurrentStep] = useState(STEPS.UPLOAD);
   const [synthesizedContent, setSynthesizedContent] = useState('');
   const [includeVerse, setIncludeVerse] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleUploadComplete = () => {
     setCurrentStep(STEPS.SURVEY);
@@ -36,10 +37,60 @@ function App() {
     setSynthesizedContent('');
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('siel_cadence');
+    window.location.href = '/login';
+  };
+
   return (
     <div className="app-layout">
-      <header className="app-header" style={{ justifyContent: 'center' }}>
-        <h1 style={{ textAlign: 'center', margin: 0 }}>Siel</h1>
+      <header className="app-header">
+        <div 
+          className="menu-trigger" 
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          style={{ cursor: 'pointer', position: 'absolute', left: '24px' }}
+        >
+          <div className="hamburger-lines">
+            <span style={{ display: 'block', width: '20px', height: '2px', background: 'var(--deep-slate)', margin: '4px 0' }}></span>
+            <span style={{ display: 'block', width: '20px', height: '2px', background: 'var(--deep-slate)', margin: '4px 0' }}></span>
+            <span style={{ display: 'block', width: '20px', height: '2px', background: 'var(--deep-slate)', margin: '4px 0' }}></span>
+          </div>
+        </div>
+
+        <h1 style={{ textAlign: 'center', margin: 0, width: '100%' }}>Siel</h1>
+
+        {isMenuOpen && (
+          <div className="dropdown-menu" style={{
+            position: 'absolute',
+            top: '70px',
+            left: '20px',
+            background: 'white',
+            border: '1px solid #eee',
+            borderRadius: '12px',
+            boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
+            padding: '12px',
+            zIndex: 1000,
+            width: '160px',
+            animation: 'fadeIn 0.2s ease'
+          }}>
+            <button 
+              onClick={handleLogout}
+              style={{
+                width: '100%',
+                background: 'transparent',
+                border: 'none',
+                color: '#ef4444',
+                fontSize: '14px',
+                fontWeight: '600',
+                textAlign: 'left',
+                padding: '10px',
+                cursor: 'pointer'
+              }}
+            >
+              Logout
+            </button>
+          </div>
+        )}
       </header>
       
       <main className="app-main">
