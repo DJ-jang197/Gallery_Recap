@@ -48,10 +48,14 @@ function App() {
             stress: surveyState.stress
           },
           reflection: surveyState.reflection,
-          // We can also pass metadataList here if we want Gemini to see it
-          metadata: surveyState.metadataList 
+          metadata: metadataList 
         })
       });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
 
       const data = await response.json();
       let prose = data.narrative;
