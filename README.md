@@ -1,15 +1,15 @@
-# Siel: Digital Biographer ✦
+# Siel: Digital Biographer
 
 **Siel** is a "Privacy-First" digital biography platform designed to ghostwrite life journals by synthesizing local photo metadata and user sentiment reflections. It creates a cohesive narrative of your journey while ensuring your binary data never leaves your local environment.
 
-## 🌌 Project Vision
+## Project Vision
 The core philosophy of Siel is **Privacy + Serenity**. 
 - **Privacy-First:** Photo metadata is extracted in-memory and discarded immediately. No raw images are stored or uploaded.
 - **Cadence-Based:** Users choose between a **Two-Week Sprint** (granular, day-to-day focus) or a **Monthly Recap** (thematic, macro arcs).
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 Siel is a polyglot monorepo consisting of three specialized modules:
 
 ### 1. Identity Service (`/Auth`)
@@ -37,7 +37,7 @@ Siel is a polyglot monorepo consisting of three specialized modules:
 
 ---
 
-## 🛠️ Installation & Compilation
+## Installation & Compilation
 
 Siel is designed to be **fully portable**. It includes a local JDK and Maven Wrapper, so you do not need to install Java or Maven on your system.
 
@@ -63,7 +63,7 @@ Start the individual components in separate terminal windows:
 
 ---
 
-## 🔒 Security & Privacy Notes
+## Security & Privacy Notes
 - **API Keys:** To enable live AI synthesis, add your Gemini API Key to `Siel_Spring/src/main/resources/application.properties`.
 - **Data Locality:** All photo processing is internal. The AI only receives coordinates and dates, never raw image bytes.
 - **Security Logic:** Auth uses Argon2id for hashing and timing-safe verification to prevent enumeration attacks.
