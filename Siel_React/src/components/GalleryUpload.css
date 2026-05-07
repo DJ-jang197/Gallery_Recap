@@ -72,6 +72,14 @@
   color: var(--deep-slate);
 }
 
+.excluded-hint {
+  margin-top: 8px !important;
+  font-size: 12px !important;
+  color: #ef4444 !important;
+  font-weight: 600 !important;
+  opacity: 0.9;
+}
+
 .progress-bar {
   position: absolute;
   bottom: 0;
