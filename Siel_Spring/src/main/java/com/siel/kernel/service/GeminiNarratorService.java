@@ -77,8 +77,8 @@ public class GeminiNarratorService {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");
-        conn.setConnectTimeout(30000); // Increased to 30s
-        conn.setReadTimeout(30000);
+        conn.setConnectTimeout(60000); // 60s timeout
+        conn.setReadTimeout(60000);
         conn.setDoOutput(true);
 
         // Sanitize prompt for JSON
