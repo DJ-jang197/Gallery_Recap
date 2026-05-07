@@ -8,7 +8,7 @@ import './Survey.css';
  * Changes the reflective prompt based on Bi-Weekly vs Monthly.
  * Builds the SurveyState object internally.
  */
-const Survey = () => {
+const Survey = ({ onComplete }) => {
   const [cadence, setCadence] = useState('biweekly');
   const [scores, setScores] = useState({ energy: 0, social: 0, stress: 0 });
   const [reflection, setReflection] = useState('');
@@ -41,9 +41,7 @@ const Survey = () => {
       reflection
     };
 
-    // In Phase 4, this state is sent to the backend/AI
-    console.log("Survey State Synchronized:", surveyState);
-    alert('Reflection captured. Ready for Synthesis.');
+    onComplete(surveyState);
   };
 
   const renderStars = (category) => {

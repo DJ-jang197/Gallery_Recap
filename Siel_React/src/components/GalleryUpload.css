@@ -1,0 +1,115 @@
+.gallery-container {
+  width: 100%;
+  max-width: 500px;
+  background: var(--card-bg);
+  border: 1px solid rgba(73, 101, 128, 0.05);
+  border-radius: 28px;
+  padding: 40px;
+  box-shadow: 0 16px 48px rgba(73, 101, 128, 0.06);
+}
+
+.gallery-container h2 {
+  margin: 0 0 8px;
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: -1px;
+  color: var(--deep-slate);
+  text-align: center;
+}
+
+.gallery-container .subtitle {
+  margin: 0 0 32px;
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 400;
+  text-align: center;
+}
+
+.drop-zone {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  border: 2px dashed var(--peach);
+  border-radius: 20px;
+  background: #fffefb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.drop-zone.has-files {
+  border-style: solid;
+  border-color: var(--sky-blue);
+  background: #f0f9ff;
+}
+
+.drop-zone input {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.drop-content {
+  text-align: center;
+  pointer-events: none;
+}
+
+.drop-content .icon {
+  font-size: 48px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.drop-content p {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--deep-slate);
+}
+
+.progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: #e2e8f0;
+}
+
+.progress-bar .fill {
+  height: 100%;
+  background: var(--sky-blue);
+  transition: width 0.3s ease;
+}
+
+.next-btn {
+  width: 100%;
+  height: 56px;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  margin-top: 32px;
+  font-size: 16px;
+  font-weight: 600;
+  background: var(--deep-slate);
+  color: #ffffff;
+  box-shadow: 0 8px 16px rgba(73, 101, 128, 0.15);
+  transition: all 0.3s ease;
+}
+
+.next-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.next-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(73, 101, 128, 0.2);
+}

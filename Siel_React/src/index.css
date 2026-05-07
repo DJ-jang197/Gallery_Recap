@@ -98,3 +98,36 @@ html, body {
 .nav-item .icon {
   font-size: 20px;
 }
+
+/* --- Mobile Frame Adjustments --- */
+@media (max-width: 600px) {
+  .app-header {
+    padding: 20px;
+  }
+  
+  .app-header h1 {
+    font-size: 22px;
+  }
+  
+  .app-main {
+    padding: 30px 16px 120px;
+  }
+  
+  .survey-container, .gallery-container, .synthesis-container {
+    padding: 24px 20px;
+    border-radius: 20px;
+  }
+  
+  .survey-container h2, .gallery-container h2, .synthesis-container h2 {
+    font-size: 24px;
+  }
+  
+  .bottom-nav {
+    height: 70px;
+    padding: 0 10px;
+  }
+  
+  .nav-item span:not(.icon) {
+    font-size: 9px;
+  }
+}
