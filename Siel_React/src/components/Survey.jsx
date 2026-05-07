@@ -2,16 +2,15 @@ import React, { useState, useEffect } from 'react';
 import './Survey.css';
 
 /**
- * 1-5 Star Survey Component handling Energy, Social, and Stress.
- *
- * Logic: Reads 'siel_cadence' from localStorage (set by Auth module).
- * Changes the reflective prompt based on Bi-Weekly vs Monthly.
- * Builds the SurveyState object internally.
+ * Component for gathering user sentiment.
+ * Removed star emoticons for a cleaner text-based scale.
+ * Added NIV Bible verse integration.
  */
 const Survey = ({ onComplete }) => {
   const [cadence, setCadence] = useState('biweekly');
   const [scores, setScores] = useState({ energy: 0, social: 0, stress: 0 });
   const [reflection, setReflection] = useState('');
+  const [wantsVerse, setWantsVerse] = useState(false);
   
   useEffect(() => {
     const saved = localStorage.getItem('siel_cadence');
@@ -20,14 +19,14 @@ const Survey = ({ onComplete }) => {
     }
   }, []);
 
-  const handleStarClick = (category, value) => {
+  const handleScoreSelect = (category, value) => {
     setScores(prev => ({ ...prev, [category]: value }));
   };
 
   const getPrompt = () => {
     return cadence === 'biweekly' 
-      ? "How was your fortnight?" 
-      : "Define your month in three words.";
+      ? "How would you describe your last two weeks?" 
+      : "What defined your journey this month?";
   };
 
   const handleSubmit = (e) => {
@@ -38,23 +37,25 @@ const Survey = ({ onComplete }) => {
       energy: scores.energy,
       social: scores.social,
       stress: scores.stress,
-      reflection
+      reflection,
+      wantsVerse
     };
 
     onComplete(surveyState);
   };
 
-  const renderStars = (category) => {
+  const renderScale = (category) => {
     return (
-      <div className="stars">
-        {[1, 2, 3, 4, 5].map(star => (
-          <span 
-            key={star} 
-            className={`star ${scores[category] >= star ? 'active' : ''}`}
-            onClick={() => handleStarClick(category, star)}
+      <div className="scale-container">
+        {[1, 2, 3, 4, 5].map((num) => (
+          <button
+            key={num}
+            type="button"
+            className={`scale-btn ${scores[category] === num ? 'active' : ''}`}
+            onClick={() => handleScoreSelect(category, num)}
           >
-            ★
-          </span>
+            {num}
+          </button>
         ))}
       </div>
     );
@@ -63,22 +64,22 @@ const Survey = ({ onComplete }) => {
   return (
     <div className="survey-container">
       <h2>The Soul</h2>
-      <p className="subtitle">Capture the essence of your recent journey.</p>
-      
-      <form onSubmit={handleSubmit} className="survey-form">
+      <p className="subtitle">Reflect on your inner state.</p>
+
+      <form className="survey-form" onSubmit={handleSubmit}>
         <div className="rating-group">
           <label>Energy Level</label>
-          {renderStars('energy')}
+          {renderScale('energy')}
         </div>
-        
+
         <div className="rating-group">
-          <label>Social Battery</label>
-          {renderStars('social')}
+          <label>Social Connection</label>
+          {renderScale('social')}
         </div>
-        
+
         <div className="rating-group">
-          <label>Stress & Pressure</label>
-          {renderStars('stress')}
+          <label>Mental Stress</label>
+          {renderScale('stress')}
         </div>
 
         <div className="reflection-group">
@@ -86,13 +87,25 @@ const Survey = ({ onComplete }) => {
           <textarea 
             value={reflection}
             onChange={(e) => setReflection(e.target.value)}
-            placeholder="Type your reflection here..."
+            placeholder="Write your thoughts here..."
             required
           />
         </div>
 
-        <button type="submit" className="submit-btn">
-          Synthesize Narrative
+        <div className="verse-toggle">
+          <label className="checkbox-container">
+            <input 
+              type="checkbox" 
+              checked={wantsVerse} 
+              onChange={(e) => setWantsVerse(e.target.checked)} 
+            />
+            <span className="checkmark"></span>
+            Include a related NIV Bible verse?
+          </label>
+        </div>
+
+        <button className="submit-btn" type="submit">
+          Generate Journal Entry
         </button>
       </form>
     </div>

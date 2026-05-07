@@ -1,4 +1,4 @@
-/* Siel Aesthetic - Peach Skyline Survey */
+/* Siel Aesthetic - Refined Survey */
 .survey-container {
   width: 100%;
   max-width: 500px;
@@ -29,7 +29,7 @@
 .survey-form {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 28px;
 }
 
 .rating-group {
@@ -39,52 +39,61 @@
 }
 
 .rating-group label {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   color: var(--deep-slate);
-  text-transform: none;
-  letter-spacing: normal;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.7;
 }
 
-.stars {
+.scale-container {
   display: flex;
-  gap: 10px;
+  justify-content: space-between;
+  gap: 8px;
 }
 
-.star {
-  font-size: 36px;
-  color: #f1f5f9;
+.scale-btn {
+  flex: 1;
+  height: 44px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.star:hover, .star.active {
-  color: var(--peach);
-  filter: drop-shadow(0 0 4px rgba(255, 219, 187, 0.5));
+.scale-btn:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.scale-btn.active {
+  background: var(--deep-slate);
+  border-color: var(--deep-slate);
+  color: white;
 }
 
 .reflection-group {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 24px;
-  background: #fdf2f8; /* Very light pink/peach */
-  border-radius: 20px;
-  border: 1px solid rgba(255, 219, 187, 0.3);
 }
 
 .reflection-group label {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
   color: var(--deep-slate);
   line-height: 1.4;
-  font-style: italic;
 }
 
 .reflection-group textarea {
   width: 100%;
   height: 120px;
-  background: white;
+  background: #fffefb;
   border: 1px solid rgba(73, 101, 128, 0.1);
   border-radius: 12px;
   padding: 16px;
@@ -92,13 +101,70 @@
   color: var(--deep-slate);
   resize: none;
   font-family: inherit;
-  transition: all 0.3s ease;
 }
 
-.reflection-group textarea:focus {
-  outline: none;
-  border-color: var(--sky-blue);
-  box-shadow: 0 0 0 4px rgba(186, 221, 255, 0.2);
+/* --- Checkbox Styling --- */
+.verse-toggle {
+  margin-top: 8px;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding-left: 35px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--deep-slate);
+  font-weight: 500;
+  user-select: none;
+}
+
+.checkbox-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  position: absolute;
+  left: 0;
+  height: 22px;
+  width: 22px;
+  background-color: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+}
+
+.checkbox-container:hover input ~ .checkmark {
+  background-color: #e2e8f0;
+}
+
+.checkbox-container input:checked ~ .checkmark {
+  background-color: var(--deep-slate);
+  border-color: var(--deep-slate);
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.checkbox-container input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.checkbox-container .checkmark:after {
+  left: 7px;
+  top: 3px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
 }
 
 .submit-btn {
@@ -107,16 +173,10 @@
   border: none;
   border-radius: 16px;
   cursor: pointer;
-  margin-top: 8px;
+  margin-top: 12px;
   font-size: 16px;
   font-weight: 600;
   background: var(--deep-slate);
   color: #ffffff;
   box-shadow: 0 8px 16px rgba(73, 101, 128, 0.15);
-  transition: all 0.3s ease;
-}
-
-.submit-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(73, 101, 128, 0.2);
 }

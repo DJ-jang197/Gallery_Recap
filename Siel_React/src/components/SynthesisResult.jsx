@@ -1,30 +1,33 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './SynthesisResult.css';
 
 /**
  * Component displaying the final synthesized journal entry.
+ * Allows user to edit the text directly.
  */
 const SynthesisResult = ({ content, onReset }) => {
+  const [editableContent, setEditableContent] = useState(content);
+
   return (
     <div className="synthesis-container">
       <div className="header-meta">
-        <span className="tag">Final Narrative</span>
-        <span className="date">{new Date().toLocaleDateString()}</span>
+        <span className="tag">Archive Entry</span>
+        <span className="date">{new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
       </div>
       
-      <h2>The Turning Point</h2>
+      <h2>The Narrative</h2>
       
-      <div className="narrative-body">
-        {content || "Generating your story..."}
-      </div>
-
-      <div className="quote-card">
-        <span className="icon">✧</span>
-        <p>"Peace is not the absence of work, but the presence of purpose."</p>
+      <div className="narrative-editor">
+        <textarea 
+          value={editableContent}
+          onChange={(e) => setEditableContent(e.target.value)}
+          placeholder="Your story is appearing here..."
+        />
+        <div className="edit-hint">You can edit the text above to refine your story.</div>
       </div>
 
       <button className="reset-btn" onClick={onReset}>
-        Start New Reflection
+        Complete Reflection
       </button>
     </div>
   );

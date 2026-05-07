@@ -1,12 +1,11 @@
 .synthesis-container {
   width: 100%;
-  max-width: 500px;
+  max-width: 550px;
   background: var(--card-bg);
   border: 1px solid rgba(73, 101, 128, 0.05);
   border-radius: 28px;
   padding: 40px;
   box-shadow: 0 16px 48px rgba(73, 101, 128, 0.06);
-  animation: fadeIn 0.8s ease;
 }
 
 .header-meta {
@@ -23,11 +22,13 @@
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
+  color: var(--deep-slate);
 }
 
 .header-meta .date {
   font-size: 12px;
   color: #94a3b8;
+  font-weight: 500;
 }
 
 .synthesis-container h2 {
@@ -38,56 +39,54 @@
   color: var(--deep-slate);
 }
 
-.narrative-body {
+.narrative-editor {
+  margin-bottom: 32px;
+}
+
+.narrative-editor textarea {
+  width: 100%;
+  height: 300px;
+  background: #fffefb;
+  border: 1px solid rgba(73, 101, 128, 0.1);
+  border-radius: 16px;
+  padding: 24px;
   font-size: 16px;
   line-height: 1.8;
   color: #334155;
-  margin-bottom: 32px;
-  white-space: pre-wrap;
+  resize: none;
+  font-family: inherit;
+  transition: all 0.3s ease;
 }
 
-.quote-card {
-  background: #fdf2f8;
-  padding: 32px;
-  border-radius: 24px;
-  text-align: center;
-  margin-bottom: 32px;
+.narrative-editor textarea:focus {
+  outline: none;
+  border-color: var(--sky-blue);
+  box-shadow: 0 0 0 4px rgba(186, 221, 255, 0.15);
 }
 
-.quote-card .icon {
-  font-size: 24px;
-  display: block;
-  margin-bottom: 12px;
-  color: var(--peach);
-}
-
-.quote-card p {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 500;
-  color: var(--deep-slate);
+.edit-hint {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #94a3b8;
+  text-align: right;
   font-style: italic;
-  line-height: 1.6;
 }
 
 .reset-btn {
   width: 100%;
   height: 52px;
-  border: 1px solid var(--deep-slate);
+  border: none;
   border-radius: 16px;
-  background: transparent;
-  color: var(--deep-slate);
+  background: var(--deep-slate);
+  color: white;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(73, 101, 128, 0.15);
 }
 
 .reset-btn:hover {
-  background: #f8fafc;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.98); }
-  to { opacity: 1; transform: scale(1); }
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(73, 101, 128, 0.25);
 }

@@ -29,7 +29,7 @@ const GalleryUpload = ({ onComplete }) => {
   return (
     <div className="gallery-container">
       <h2>The Detective</h2>
-      <p className="subtitle">Upload your photos to extract local metadata.</p>
+      <p className="subtitle">Select photos to extract local metadata.</p>
       
       <div className={`drop-zone ${files.length > 0 ? 'has-files' : ''}`}>
         <input 
@@ -40,8 +40,7 @@ const GalleryUpload = ({ onComplete }) => {
           disabled={uploading}
         />
         <div className="drop-content">
-          <span className="icon">📸</span>
-          <p>{files.length > 0 ? `${files.length} Photos Selected` : 'Tap to select photos'}</p>
+          <p>{files.length > 0 ? `${files.length} photos selected` : 'Click to select gallery photos'}</p>
         </div>
         {uploading && (
           <div className="progress-bar">
@@ -55,7 +54,7 @@ const GalleryUpload = ({ onComplete }) => {
         disabled={files.length === 0 || uploading}
         onClick={onComplete}
       >
-        Analyze Sentiment →
+        Analyze Sentiment
       </button>
     </div>
   );
