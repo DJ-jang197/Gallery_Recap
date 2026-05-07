@@ -1,10 +1,11 @@
-# Siel Spring Boot Configuration
+# Siel Spring Boot Configuration Template
+# COPY THIS FILE TO 'application.properties' and fill in your keys.
+
 spring.application.name=siel-metadata-kernel
 
 # ---------------------------------------------------------
 # GEMINI API INTEGRATION
 # ---------------------------------------------------------
-# TODO: Replace the placeholder below with your real Gemini 1.5 Flash API Key.
-# Currently, the Narrator Service operates in MOCK mode when it detects this placeholder.
+# Replace the placeholder below with your real Gemini 1.5 Flash API Key.
 gemini.api.key=YOUR_API_KEY_HERE
 gemini.api.url=https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent
