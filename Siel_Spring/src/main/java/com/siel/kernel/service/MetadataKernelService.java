@@ -1,9 +1,9 @@
 package com.siel.kernel.service;
 
-import com.drewnoakes.metadata.Metadata;
-import com.drewnoakes.metadata.ImageMetadataReader;
-import com.drewnoakes.metadata.exif.ExifSubIFDDirectory;
-import com.drewnoakes.metadata.exif.GpsDirectory;
+import com.drew.metadata.Metadata;
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.metadata.exif.ExifSubIFDDirectory;
+import com.drew.metadata.exif.GpsDirectory;
 import com.siel.kernel.model.PhotoMetadata;
 import org.springframework.stereotype.Service;
 

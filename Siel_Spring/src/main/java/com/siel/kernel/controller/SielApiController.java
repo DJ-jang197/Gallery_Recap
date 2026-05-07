@@ -4,6 +4,7 @@ import com.siel.kernel.service.GeminiNarratorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,9 +28,10 @@ public class SielApiController {
         // Extract data from request
         Map<String, Integer> scores = (Map<String, Integer>) request.get("scores");
         String reflection = (String) request.get("reflection");
+        List<Map<String, String>> metadata = (List<Map<String, String>>) request.get("metadata");
         
-        // Call the service
-        String narrative = narratorService.synthesizeNarrative(scores, reflection);
+        // Call the service with metadata
+        String narrative = narratorService.synthesizeNarrative(scores, reflection, metadata);
         
         return Map.of("narrative", narrative);
     }
