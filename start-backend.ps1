@@ -13,6 +13,14 @@ if (-not (Test-Path $javaPath)) {
 $env:JAVA_HOME = $javaPath
 $env:Path = "$(Join-Path $javaPath "bin");$env:Path"
 
+# SELF-HEALING: Automatically clear port 8080 before starting
+Write-Host "Ensuring port 8080 is clear..." -ForegroundColor Gray
+$portProcess = Get-NetTCPConnection -LocalPort 8080 -ErrorAction SilentlyContinue
+if ($portProcess) {
+    Write-Host "Found existing process on 8080. Stopping it..." -ForegroundColor Yellow
+    $portProcess | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }
+}
+
 cd Siel_Spring
 
 if ($Build) {
