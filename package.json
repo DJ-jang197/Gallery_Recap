@@ -1,0 +1,17 @@
+{
+  "name": "siel-monorepo",
+  "version": "1.0.0",
+  "description": "Project Siel - Unified Build Orchestrator",
+  "scripts": {
+    "install:all": "npm install --prefix Auth && npm install --prefix Siel_React",
+    "build:auth": "npm run build --prefix Auth",
+    "build:react": "npm run build --prefix Siel_React",
+    "build:spring": "cd Siel_Spring && mvn clean package",
+    "build:all": "npm run build:auth && npm run build:react && npm run build:spring",
+    "dev:auth": "npm run dev --prefix Auth",
+    "dev:react": "npm run dev --prefix Siel_React",
+    "dev:spring": "cd Siel_Spring && mvn spring-boot:run"
+  },
+  "author": "Antigravity",
+  "license": "MIT"
+}

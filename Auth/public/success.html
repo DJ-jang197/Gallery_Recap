@@ -9,25 +9,27 @@
   <body>
     <main class="page">
       <section class="card">
-        <h1>Welcome to Siel</h1>
-        <p class="subtitle">Your digital biography is ready to be written.</p>
-        
-        <p style="font-size: 14px; margin-top: 10px; color: #cbd5e1; font-weight: 300;">
-          Select your reflection cadence to begin the journey.
-        </p>
+        <h1>Welcome</h1>
+        <p class="subtitle">Select your reflection cadence to begin.</p>
         
         <div class="cadence-selector">
           <button id="cadenceBiWeekly" class="cadence-btn" type="button" aria-pressed="false">
-            <span class="icon">⏳</span>
-            Two-Week Sprint
+            <span class="icon">⌛</span>
+            <div>
+              <div style="font-size: 15px;">Two-Week Sprint</div>
+              <div style="font-size: 11px; font-weight: 400; opacity: 0.6;">Granular reflection</div>
+            </div>
           </button>
           <button id="cadenceMonthly" class="cadence-btn" type="button" aria-pressed="false">
             <span class="icon">📅</span>
-            Monthly Recap
+            <div>
+              <div style="font-size: 15px;">Monthly Recap</div>
+              <div style="font-size: 11px; font-weight: 400; opacity: 0.6;">Thematic overview</div>
+            </div>
           </button>
         </div>
 
-        <button id="proceedBtn" class="primary-btn" disabled>Continue</button>
+        <button id="proceedBtn" class="primary-btn" disabled>Continue to Journey</button>
 
         <p class="footnote">
           <a class="link-btn" href="#" id="logoutBtn">Secure Logout</a>
@@ -57,10 +59,7 @@
           btnBiWeekly.setAttribute('aria-pressed', 'false');
         }
         
-        // Save to localStorage so React frontend can pick it up
         localStorage.setItem('siel_cadence', cadence);
-        
-        // Enable proceed button
         proceedBtn.disabled = false;
       }
 
@@ -69,8 +68,6 @@
 
       proceedBtn.addEventListener('click', () => {
         if (!selectedCadence) return;
-        // The React frontend will run on a separate port or be served alongside.
-        // For now, redirect to the root where React will live, or a placeholder.
         window.location.href = '/app'; 
       });
 
@@ -85,7 +82,6 @@
         }
       });
       
-      // Initialize if previously set
       const savedCadence = localStorage.getItem('siel_cadence');
       if (savedCadence) {
         selectCadence(savedCadence);

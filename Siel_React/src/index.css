@@ -1,18 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
 
 :root {
-  --bg-color: #0f172a;
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --accent: #38bdf8;
+  --peach: #FFDBBB;
+  --sky-blue: #BADDFF;
+  --pale-cyan: #BAFFF5;
+  --deep-slate: #496580;
+  --bg-serene: #FFFBF9;
+  --card-bg: #FFFFFF;
 }
 
 html, body {
   margin: 0;
   padding: 0;
   font-family: 'Inter', sans-serif;
-  background-color: var(--bg-color);
-  color: var(--text-primary);
+  background-color: var(--bg-serene);
+  color: var(--deep-slate);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -26,33 +28,73 @@ html, body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: radial-gradient(circle at 50% -20%, #1e293b, #0f172a 70%);
+  background: radial-gradient(circle at 50% 0%, var(--peach) 0%, var(--bg-serene) 100%);
 }
 
 .app-header {
-  padding: 24px 40px;
+  padding: 32px 40px;
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(73, 101, 128, 0.05);
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(10px);
 }
 
 .app-header h1 {
   margin: 0;
-  font-size: 24px;
-  font-weight: 300;
-  letter-spacing: 1px;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -1px;
 }
 
 .app-header p {
   margin: 0;
-  font-size: 14px;
-  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #6b7280;
 }
 
 .app-main {
   flex: 1;
-  display: grid;
-  place-items: center;
-  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 20px 120px;
+}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(73, 101, 128, 0.05);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 20px;
+  z-index: 100;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+  cursor: pointer;
+}
+
+.nav-item.active {
+  color: var(--deep-slate);
+}
+
+.nav-item .icon {
+  font-size: 20px;
 }
