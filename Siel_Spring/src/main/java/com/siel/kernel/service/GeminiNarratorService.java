@@ -71,7 +71,9 @@ public class GeminiNarratorService {
     }
 
     private String callGemini(String prompt, String cleanKey) throws Exception {
-        URL url = new URL(apiUrl + "?key=" + cleanKey);
+        String fullUrl = apiUrl + "?key=" + cleanKey;
+        System.out.println("[Siel Kernel] Calling Gemini API at: " + apiUrl);
+        URL url = new URL(fullUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");
