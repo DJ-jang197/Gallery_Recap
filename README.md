@@ -30,11 +30,6 @@ Siel is a polyglot monorepo consisting of three specialized modules:
   - Dynamic reflective prompts that change based on whether you are in a Bi-Weekly or Monthly cycle.
   - **Aesthetic:** "Peach Skyline" — a serene, card-based light-mode theme.
 
-### 4. AI Narrator
-- **Orchestration:** Gemini 1.5 Flash.
-- **Synthesis:** Merges objective metadata with subjective survey scores into natural prose.
-- **Logic:** Adjusts narrative scope (Granular vs. Thematic) and strictly filters out raw numerical scores for a more human journal entry.
-
 ---
 
 ## Installation & Compilation
@@ -64,8 +59,7 @@ Start the individual components in separate terminal windows:
 ---
 
 ## Security & Privacy Notes
-- **API Keys:** To enable live AI synthesis, add your Gemini API Key to `Siel_Spring/src/main/resources/application.properties`.
-- **Data Locality:** All photo processing is internal. The AI only receives coordinates and dates, never raw image bytes.
+- **Data Locality:** All photo processing is internal. 
 - **Security Logic:** Auth uses Argon2id for hashing and timing-safe verification to prevent enumeration attacks.
 
 ---
