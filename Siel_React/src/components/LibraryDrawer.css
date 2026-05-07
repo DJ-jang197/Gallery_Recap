@@ -1,0 +1,138 @@
+.drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.drawer-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.library-drawer {
+  position: fixed;
+  top: 0;
+  left: -350px;
+  width: 350px;
+  height: 100vh;
+  background: var(--bg-serene);
+  z-index: 1001;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
+  transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.library-drawer.open {
+  left: 0;
+}
+
+@media (max-width: 400px) {
+  .library-drawer {
+    width: 85vw;
+    left: -85vw;
+  }
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 32px;
+  border-bottom: 1px solid rgba(73, 101, 128, 0.05);
+}
+
+.drawer-header h2 {
+  margin: 0;
+  font-size: 24px;
+  color: var(--deep-slate);
+  letter-spacing: -0.5px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 8px;
+  transition: color 0.2s ease;
+}
+
+.close-btn:hover {
+  color: var(--deep-slate);
+}
+
+.drawer-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.empty-state {
+  text-align: center;
+  color: #94a3b8;
+  font-size: 14px;
+  margin-top: 40px;
+}
+
+.entry-card {
+  background: white;
+  border: 1px solid rgba(73, 101, 128, 0.05);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(73, 101, 128, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.entry-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(73, 101, 128, 0.08);
+}
+
+.entry-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.entry-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--deep-slate);
+}
+
+.entry-date {
+  margin: 0;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 8px;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.delete-btn:hover {
+  opacity: 1;
+}

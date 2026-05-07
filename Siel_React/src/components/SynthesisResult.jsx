@@ -5,7 +5,7 @@ import './SynthesisResult.css';
  * Component displaying the final synthesized journal entry.
  * Allows user to edit the text directly.
  */
-const SynthesisResult = ({ content, onReset }) => {
+const SynthesisResult = ({ content, onComplete }) => {
   const [editableContent, setEditableContent] = useState(content);
 
   return (
@@ -26,7 +26,7 @@ const SynthesisResult = ({ content, onReset }) => {
         <div className="edit-hint">You can edit the text above to refine your story.</div>
       </div>
 
-      <button className="reset-btn" onClick={onReset}>
+      <button className="reset-btn" onClick={() => onComplete(editableContent)}>
         Complete Reflection
       </button>
     </div>

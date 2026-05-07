@@ -1,0 +1,93 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+
+.naming-modal {
+  width: 100%;
+  max-width: 400px;
+  background: white;
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 16px 40px rgba(73, 101, 128, 0.15);
+  animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  margin: 0 20px;
+}
+
+.naming-modal h2 {
+  margin: 0 0 8px;
+  font-size: 24px;
+  color: var(--deep-slate);
+}
+
+.naming-modal .subtitle {
+  margin: 0 0 24px;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.naming-modal input {
+  width: 100%;
+  height: 48px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0 16px;
+  font-size: 15px;
+  color: var(--deep-slate);
+  margin-bottom: 24px;
+}
+
+.naming-modal input:focus {
+  outline: none;
+  border-color: var(--sky-blue);
+  box-shadow: 0 0 0 3px rgba(186, 221, 255, 0.3);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cancel-btn {
+  padding: 0 20px;
+  height: 40px;
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  color: #64748b;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.save-btn {
+  padding: 0 20px;
+  height: 40px;
+  background: var(--deep-slate);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.save-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
