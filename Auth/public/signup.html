@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Auth Sign Up</title>
+    <link rel="stylesheet" href="/login.css" />
+  </head>
+  <body>
+    <main class="page">
+      <div class="key-burst-backdrop" aria-hidden="true"></div>
+      <div class="toast">Create your Auth account</div>
+
+      <section class="card">
+        <div class="avatar-stage">
+          <div class="narwhal-frame">
+            <img
+              src="/ui-assets/c__Users_ForDa_AppData_Roaming_Cursor_User_workspaceStorage_2e706fc67a0893f4eee3cafb30608c2d_images_minimalist_cartoon_narwhal_character_flat_design_vector_style_simple_shapes-5478ea56-97d6-46df-aaf6-8aeccc94c5df.png"
+              alt="Narwhal logo"
+              class="narwhal-head"
+              onerror="this.style.display='none'"
+            />
+          </div>
+        </div>
+
+        <h1>DJ'S AUTH</h1>
+
+        <form id="signupForm" class="form">
+          <label for="username">Username</label>
+          <input id="username" type="text" placeholder="your.username" required />
+
+          <label for="password">Password</label>
+          <div class="key-input">
+            <input id="password" type="password" placeholder="Create a password" required />
+            <button type="button" id="togglePassword" class="eye-btn" aria-label="Show password">
+              👁
+            </button>
+          </div>
+
+          <p id="passwordHint" class="status" aria-live="polite"></p>
+          <button type="submit" class="primary-btn">Create Account</button>
+        </form>
+
+        <p id="signupStatus" class="status" aria-live="polite"></p>
+        <p class="footnote">
+          Already have an account?
+          <a class="link-btn" href="/login">Log in</a>
+        </p>
+      </section>
+    </main>
+
+    <script src="/signup.js"></script>
+  </body>
+</html>
+

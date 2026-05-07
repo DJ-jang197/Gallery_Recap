@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Siel - Authentication</title>
+    <link rel="stylesheet" href="/login.css" />
+  </head>
+  <body>
+    <main class="page">
+      <div class="toast">End-to-end encryption active</div>
+
+      <section class="card">
+        <h1>Siel</h1>
+        <p class="subtitle">Secure your digital biography</p>
+
+        <form id="loginForm" class="form">
+          <label for="identifier">Username</label>
+          <input id="identifier" type="text" placeholder="your.username" required />
+
+          <label for="securityKey">Security Key</label>
+          <div class="key-input">
+            <input
+              id="securityKey"
+              type="password"
+              placeholder="Enter your security key"
+              required
+            />
+            <button type="button" id="toggleKey" class="eye-btn" aria-label="Show security key">
+              👁
+            </button>
+          </div>
+
+          <button type="submit" class="primary-btn">Authenticate</button>
+        </form>
+        <p id="loginStatus" class="status" aria-live="polite"></p>
+
+        <p class="footnote">
+          Don't have an account?
+          <a class="link-btn" href="/signup">Request Access</a>
+        </p>
+      </section>
+    </main>
+
+    <script src="/login.js"></script>
+  </body>
+</html>

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register Help</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f3f6f8;
+        color: #1e1e1e;
+      }
+      .wrap {
+        max-width: 720px;
+        margin: 32px auto;
+        background: #fff;
+        border: 1px solid #dcdcdc;
+        padding: 24px;
+      }
+      code {
+        background: #f3f3f3;
+        padding: 2px 4px;
+      }
+      pre {
+        background: #f3f3f3;
+        padding: 10px;
+        overflow: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <h1>Request Access</h1>
+      <p>Create a local test account through the API:</p>
+      <pre>POST /auth/register
+{
+  "email": "new.user@example.com",
+  "password": "Str0ng!Password12"
+}</pre>
+      <p>Password policy: 12+ chars, uppercase, number, and special character.</p>
+      <p><a href="/login">Back to login</a></p>
+    </main>
+  </body>
+</html>
+

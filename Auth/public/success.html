@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Siel - Dashboard</title>
+    <link rel="stylesheet" href="/login.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="card">
+        <h1>Welcome to Siel</h1>
+        <p class="subtitle">Your digital biography is ready to be written.</p>
+        
+        <p style="font-size: 14px; margin-top: 10px; color: #cbd5e1; font-weight: 300;">
+          Select your reflection cadence to begin the journey.
+        </p>
+        
+        <div class="cadence-selector">
+          <button id="cadenceBiWeekly" class="cadence-btn" type="button" aria-pressed="false">
+            <span class="icon">⏳</span>
+            Two-Week Sprint
+          </button>
+          <button id="cadenceMonthly" class="cadence-btn" type="button" aria-pressed="false">
+            <span class="icon">📅</span>
+            Monthly Recap
+          </button>
+        </div>
+
+        <button id="proceedBtn" class="primary-btn" disabled>Continue</button>
+
+        <p class="footnote">
+          <a class="link-btn" href="#" id="logoutBtn">Secure Logout</a>
+        </p>
+      </section>
+    </main>
+
+    <script>
+      const btnBiWeekly = document.getElementById('cadenceBiWeekly');
+      const btnMonthly = document.getElementById('cadenceMonthly');
+      const proceedBtn = document.getElementById('proceedBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+
+      let selectedCadence = null;
+
+      function selectCadence(cadence) {
+        selectedCadence = cadence;
+        if (cadence === 'biweekly') {
+          btnBiWeekly.classList.add('active');
+          btnBiWeekly.setAttribute('aria-pressed', 'true');
+          btnMonthly.classList.remove('active');
+          btnMonthly.setAttribute('aria-pressed', 'false');
+        } else {
+          btnMonthly.classList.add('active');
+          btnMonthly.setAttribute('aria-pressed', 'true');
+          btnBiWeekly.classList.remove('active');
+          btnBiWeekly.setAttribute('aria-pressed', 'false');
+        }
+        
+        // Save to localStorage so React frontend can pick it up
+        localStorage.setItem('siel_cadence', cadence);
+        
+        // Enable proceed button
+        proceedBtn.disabled = false;
+      }
+
+      btnBiWeekly.addEventListener('click', () => selectCadence('biweekly'));
+      btnMonthly.addEventListener('click', () => selectCadence('monthly'));
+
+      proceedBtn.addEventListener('click', () => {
+        if (!selectedCadence) return;
+        // The React frontend will run on a separate port or be served alongside.
+        // For now, redirect to the root where React will live, or a placeholder.
+        window.location.href = '/app'; 
+      });
+
+      logoutBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        try {
+          await fetch('/auth/logout', { method: 'POST' });
+          localStorage.removeItem('siel_cadence');
+          window.location.href = '/login';
+        } catch (err) {
+          console.error('Logout failed', err);
+        }
+      });
+      
+      // Initialize if previously set
+      const savedCadence = localStorage.getItem('siel_cadence');
+      if (savedCadence) {
+        selectCadence(savedCadence);
+      }
+    </script>
+  </body>
+</html>
