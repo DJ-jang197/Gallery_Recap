@@ -63,4 +63,4 @@ Start the individual components in separate terminal windows:
 - **Security Logic:** Auth uses Argon2id for hashing and timing-safe verification to prevent enumeration attacks.
 
 ---
-*Created with care by Antigravity.*
+<!-- *Created with care by Antigravity.* -->
