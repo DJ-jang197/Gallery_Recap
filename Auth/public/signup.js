@@ -14,11 +14,13 @@ let lastUsernameValue = ''
 const MAX_BURST_ELEMENTS = 50
 const BURST_DURATION_MS = 3600
 
+// Toggles screen dimming while password input is active.
 function setPasswordPrivacy(enabled) {
   if (!pageEl) return
   pageEl.classList.toggle('password-privacy', enabled)
 }
 
+// Applies client-side password policy checks before submit.
 function checkPasswordStrength(value) {
   const hasMinLen = value.length >= 12
   const hasNumber = /[0-9]/.test(value)
@@ -52,6 +54,7 @@ passwordInput?.addEventListener('blur', () => {
   setPasswordPrivacy(Boolean(passwordInput?.value))
 })
 
+// Creates an account and forwards user back to login on success.
 signupForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
   const username = usernameInput?.value?.trim().toLowerCase() ?? ''
@@ -98,6 +101,7 @@ signupForm?.addEventListener('submit', async (event) => {
 })
 
 // --- Key Burst Animation ---
+// Spawns floating letters around center to visualize typed characters.
 function createBurst(letter) {
   if (!burstBackdrop || !letter || !/[a-zA-Z]/.test(letter)) return
 
@@ -148,6 +152,7 @@ function createBurst(letter) {
 }
 
 // Listen for new characters in username input
+// Emits bursts only for newly-added characters.
 usernameInput?.addEventListener('input', (e) => {
   const newValue = e.target.value || ''
   

@@ -10,8 +10,10 @@ public class SielContext {
     private List<PhotoMetadata> photos;
     private SurveyState surveyState;
 
+    // Default constructor for JSON/object mappers.
     public SielContext() {}
 
+    // Constructs the unified context consumed by the narrator service.
     public SielContext(List<PhotoMetadata> photos, SurveyState surveyState) {
         this.photos = photos;
         this.surveyState = surveyState;

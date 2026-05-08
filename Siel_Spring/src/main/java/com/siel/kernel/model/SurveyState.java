@@ -11,8 +11,10 @@ public class SurveyState {
     private int stress;
     private String reflection;
 
+    // Default constructor for JSON/object mappers.
     public SurveyState() {}
 
+    // Constructs one survey payload sent from the React frontend.
     public SurveyState(String cadence, int energy, int social, int stress, String reflection) {
         this.cadence = cadence;
         this.energy = energy;

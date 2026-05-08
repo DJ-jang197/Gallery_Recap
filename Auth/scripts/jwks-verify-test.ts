@@ -1,3 +1,4 @@
+// Ensures tokens signed locally can be verified via hosted JWKS endpoint.
 import { SignJWT, createRemoteJWKSet, jwtVerify } from 'jose'
 import crypto from 'crypto'
 import { privateKey } from '../src/config/keys.js'

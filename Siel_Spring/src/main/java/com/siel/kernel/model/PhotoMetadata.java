@@ -11,8 +11,10 @@ public class PhotoMetadata {
     private Double latitude;
     private Double longitude;
 
+    // Default constructor for serialization frameworks.
     public PhotoMetadata() {}
 
+    // Constructs one metadata record extracted from a single photo.
     public PhotoMetadata(String filename, LocalDateTime captureDate, Double latitude, Double longitude) {
         this.filename = filename;
         this.captureDate = captureDate;

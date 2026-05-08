@@ -28,7 +28,9 @@ export function buildApp(): FastifyInstance {
     },
   })
 
+  // Secure default headers + anti-clickjacking response policy.
   app.register(helmet, { frameguard: { action: 'deny' } })
+  // Allow authenticated browser requests from the Siel frontend origin.
   app.register(cors, { origin: [env.CLIENT_URL], credentials: true })
 
   // Centralized error normalization.
@@ -55,15 +57,19 @@ export function buildApp(): FastifyInstance {
     decorateReply: false,
   })
 
+  // Hosted auth UI entry point.
   app.get('/login', async (_, reply) => {
     return reply.sendFile('login.html')
   })
+  // Hosted signup page entry point.
   app.get('/signup', async (_, reply) => {
     return reply.sendFile('signup.html')
   })
+  // Optional helper content for onboarding/registration support.
   app.get('/auth/register-help', async (_, reply) => {
     return reply.sendFile('register-help.html')
   })
+  // Post-login success page (UI-only route).
   app.get('/success', async (_, reply) => {
     return reply.sendFile('success.html')
   })

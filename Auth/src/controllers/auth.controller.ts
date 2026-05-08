@@ -24,8 +24,10 @@ function refreshCookieOptions() {
 }
 
 function getSignedRefreshToken(req: FastifyRequest): string | null {
+  // Read signed cookie value emitted by Fastify cookie plugin.
   const signed = (req.cookies as any)?.refresh_token as string | undefined
   if (!signed) return null
+  // Verify cookie signature before trusting token content.
   const unsign = (req as any).unsignCookie?.(signed) as
     | { valid: boolean; value: string | null }
     | undefined

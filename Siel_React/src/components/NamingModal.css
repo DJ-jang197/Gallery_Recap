@@ -1,3 +1,4 @@
+/* Modal containers for title capture before persisting an archive entry. */
 .modal-overlay {
   position: fixed;
   top: 0;

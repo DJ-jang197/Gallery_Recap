@@ -1,6 +1,7 @@
 const base = 'http://localhost:3000'
 
 async function post(path: string, body: unknown, headers?: Record<string, string>) {
+  // Measures full request latency for timing-attack regression checks.
   const start = performance.now()
   const res = await fetch(base + path, {
     method: 'POST',

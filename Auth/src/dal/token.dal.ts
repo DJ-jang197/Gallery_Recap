@@ -21,6 +21,7 @@ export type InsertTokenInput = {
 }
 
 function q(client?: pg.PoolClient) {
+  // Route DB calls to a transaction client when available.
   return client ?? pool
 }
 

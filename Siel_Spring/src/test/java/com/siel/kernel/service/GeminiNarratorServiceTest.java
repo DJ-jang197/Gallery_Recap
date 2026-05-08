@@ -130,5 +130,34 @@ public class GeminiNarratorServiceTest {
         assertFalse(service.shouldExpandDraft(longCompleteBuilder.toString() + "\n\n---"));
         assertFalse(service.shouldExpandDraft(longCompleteBuilder.toString() + "   "));
     }
+
+    @Test
+    void buildFallbackNarrativeTemplate_includesReflectionScoresAndMetadata() {
+        GeminiNarratorService service = new GeminiNarratorService();
+
+        Map<String, Object> scores = Map.of(
+                "energy", 5,
+                "social", 4,
+                "stress", 2
+        );
+        List<Map<String, String>> metadata = List.of(
+                Map.of("dateTaken", "2026-05-01", "location", "Seattle"),
+                Map.of("dateTaken", "2026-05-03", "location", "Portland")
+        );
+
+        String fallback = service.buildFallbackNarrativeTemplate(
+                scores,
+                "I noticed I stayed calm under pressure.",
+                metadata
+        );
+
+        assertTrue(fallback.startsWith("[mock-template]"));
+        assertTrue(fallback.contains("energy 5/5"));
+        assertTrue(fallback.contains("social 4/5"));
+        assertTrue(fallback.contains("stress 2/5"));
+        assertTrue(fallback.contains("on 2026-05-01 at Seattle"));
+        assertTrue(fallback.contains("on 2026-05-03 at Portland"));
+        assertTrue(fallback.contains("I noticed I stayed calm under pressure."));
+    }
 }
 

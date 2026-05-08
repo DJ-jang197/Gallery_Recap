@@ -3,7 +3,9 @@ import { env } from './env.js'
 
 // Shared Redis client used for lockout + token blocklist.
 export const redis = new Redis(env.REDIS_URL, {
+  // Connect at startup to surface infra issues immediately.
   lazyConnect: false,
+  // Fail fast per request instead of hanging indefinitely.
   maxRetriesPerRequest: 1,
 })
 

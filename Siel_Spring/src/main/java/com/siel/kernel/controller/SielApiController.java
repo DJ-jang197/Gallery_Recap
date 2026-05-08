@@ -35,6 +35,7 @@ public class SielApiController {
         long windowStartMs;
         int count;
 
+        // Tracks request count within the active per-IP rate-limit window.
         RateState(long windowStartMs, int count) {
             this.windowStartMs = windowStartMs;
             this.count = count;
@@ -78,6 +79,7 @@ public class SielApiController {
     }
 
     private boolean isRateLimited(HttpServletRequest servletRequest) {
+        // Prefer original client IP when behind a proxy/load balancer.
         String forwardedFor = servletRequest.getHeader("X-Forwarded-For");
         String ip = (forwardedFor != null && !forwardedFor.isBlank())
                 ? forwardedFor.split(",")[0].trim()

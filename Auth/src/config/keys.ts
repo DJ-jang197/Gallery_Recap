@@ -18,6 +18,7 @@ const keysDir = path.resolve(process.cwd(), 'keys')
 const privatePemPath = path.join(keysDir, 'private.pem')
 const publicPemPath = path.join(keysDir, 'public.pem')
 
+// Load signing key material eagerly so startup fails fast when keys are missing.
 const privatePem = mustReadFile(
   privatePemPath,
   'keys/private.pem not found — run scripts/gen-keys.ts',

@@ -16,6 +16,7 @@ export async function requireAuth(req: FastifyRequest, reply: FastifyReply) {
 
   let payload: JWTPayload
   try {
+    // Verify JWT signature + standard claims.
     const verified = await jwtVerify(token, await publicKey)
     payload = verified.payload
   } catch {
@@ -34,6 +35,7 @@ export async function requireAuth(req: FastifyRequest, reply: FastifyReply) {
   }
 
   try {
+    // Reject tokens that have been explicitly revoked before expiry.
     const revoked = await isAccessTokenRevoked(jti)
     if (revoked) {
       return reply.code(401).send({ error: 'Unauthorized' })

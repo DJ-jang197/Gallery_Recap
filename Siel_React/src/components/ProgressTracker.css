@@ -1,3 +1,4 @@
+/* Step-tracker containers: circles, connectors, and active/completed state styling. */
 .progress-tracker {
   display: flex;
   align-items: center;

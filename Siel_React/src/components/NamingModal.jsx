@@ -7,6 +7,7 @@ import './NamingModal.css';
 const NamingModal = ({ onSave, onCancel }) => {
   const [title, setTitle] = useState('');
 
+  // Validates non-empty title and forwards trimmed value upstream.
   const handleSubmit = (e) => {
     e.preventDefault();
     if (title.trim()) {

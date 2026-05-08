@@ -4,6 +4,7 @@ import './index.css'
 import App from './App.jsx'
 import { LibraryProvider } from './context/LibraryContext.jsx'
 
+// Bootstraps React root with global library state provider.
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <LibraryProvider>

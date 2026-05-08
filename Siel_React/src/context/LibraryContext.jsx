@@ -12,6 +12,7 @@ export const LibraryProvider = ({ children }) => {
     refreshEntries();
   }, []);
 
+  // Reloads all entries from IndexedDB to keep context state authoritative.
   const refreshEntries = async () => {
     setLoading(true);
     try {
@@ -24,6 +25,7 @@ export const LibraryProvider = ({ children }) => {
     }
   };
 
+  // Persists one entry then refreshes in-memory list.
   const addEntryToLibrary = async (entryData) => {
     try {
       await saveEntry(entryData);
@@ -35,6 +37,7 @@ export const LibraryProvider = ({ children }) => {
     }
   };
 
+  // Deletes one entry then refreshes in-memory list.
   const removeEntryFromLibrary = async (id) => {
     try {
       await deleteEntry(id);

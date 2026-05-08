@@ -4,6 +4,7 @@ import { redis } from './config/redis.js'
 
 const app = buildApp()
 
+// Network binding config for the HTTP service.
 const port = env.PORT
 const host = '0.0.0.0'
 

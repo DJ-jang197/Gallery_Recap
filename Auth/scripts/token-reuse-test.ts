@@ -7,6 +7,7 @@ async function post(
   body: unknown,
   cookie?: string,
 ): Promise<{ status: number; body: string; setCookie: string | null }> {
+  // Shared helper for cookie-based refresh rotation test requests.
   const res = await fetch(base + path, {
     method: 'POST',
     headers: {
@@ -30,6 +31,7 @@ if (!initialSetCookie) {
 }
 const originalCookie = initialSetCookie.split(';')[0]
 
+// First refresh should pass; second reuse of original cookie should fail.
 const refresh1 = await post('/auth/refresh', {}, originalCookie)
 const refresh2 = await post('/auth/refresh', {}, originalCookie)
 

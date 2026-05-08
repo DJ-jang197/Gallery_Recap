@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 import Survey from './Survey';
 
+// In-memory localStorage stub so cadence logic can be tested deterministically.
 const localStorageMock = (function() {
   let store = {};
   return {

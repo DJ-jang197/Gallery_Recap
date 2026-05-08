@@ -52,6 +52,7 @@ export async function isAccessTokenRevoked(jti: string): Promise<boolean> {
 }
 
 function base64UrlDecodeToJson(segment: string): any {
+  // Utility decoder used by local self-test to inspect token payload fields.
   const pad = segment.length % 4 === 0 ? '' : '='.repeat(4 - (segment.length % 4))
   const b64 = segment.replace(/-/g, '+').replace(/_/g, '/') + pad
   const json = Buffer.from(b64, 'base64').toString('utf8')
@@ -59,6 +60,7 @@ function base64UrlDecodeToJson(segment: string): any {
 }
 
 async function selfTest() {
+  // Lightweight sanity check for token shape + signature verification.
   const userId = crypto.randomUUID()
   const email = 'test@example.com'
   const token = await signAccessToken(userId, email)

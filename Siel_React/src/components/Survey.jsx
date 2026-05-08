@@ -13,16 +13,19 @@ const Survey = ({ onComplete, onBack }) => {
   const [wantsVerse, setWantsVerse] = useState(false);
   
   useEffect(() => {
+    // Restores previously selected cadence so prompts stay consistent.
     const saved = localStorage.getItem('siel_cadence');
     if (saved) {
       setCadence(saved);
     }
   }, []);
 
+  // Updates one score dimension (energy/social/stress) immutably.
   const handleScoreSelect = (category, value) => {
     setScores(prev => ({ ...prev, [category]: value }));
   };
 
+  // Chooses dynamic reflection prompt based on selected cadence.
   const getPrompt = () => {
     return cadence === 'monthly' 
       ? "How would you describe your last month?" 
@@ -36,10 +39,12 @@ const Survey = ({ onComplete, onBack }) => {
     'Sad', 'Happy', 'Hopeful', 'Stressed', 'Inspired'
   ];
 
+  // Toggles adjective chips in the selected mood list.
   const handleToggleAdjective = (adj) => {
     setAdjectives(prev => prev.includes(adj) ? prev.filter(a => a !== adj) : [...prev, adj]);
   };
 
+  // Adds custom adjective when user presses Enter in auxiliary input.
   const handleCustomAdjective = (e) => {
     if (e.key === 'Enter' && e.target.value.trim()) {
       e.preventDefault();
@@ -48,6 +53,7 @@ const Survey = ({ onComplete, onBack }) => {
     }
   };
 
+  // Requires all ratings, mood words, and reflection text before submit.
   const isFormValid = () => {
     return (
       scores.energy > 0 &&
@@ -58,6 +64,7 @@ const Survey = ({ onComplete, onBack }) => {
     );
   };
 
+  // Normalizes survey payload into the shape expected by App synthesis flow.
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!isFormValid()) return;
@@ -75,6 +82,7 @@ const Survey = ({ onComplete, onBack }) => {
     onComplete(surveyState);
   };
 
+  // Renders shared 1-5 numeric scale UI for each score category.
   const renderScale = (category) => {
     return (
       <div className="scale-container">

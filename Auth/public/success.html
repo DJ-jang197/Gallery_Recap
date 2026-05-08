@@ -8,6 +8,7 @@
   </head>
   <body>
     <main class="page">
+      <!-- Post-auth cadence selection container -->
       <section class="card">
         <h1>Welcome</h1>
         <p class="subtitle">Select your reflection cadence to begin.</p>
@@ -45,6 +46,7 @@
 
       let selectedCadence = null;
 
+      // Persists selected cadence and updates button state.
       function selectCadence(cadence) {
         selectedCadence = cadence;
         if (cadence === 'biweekly') {

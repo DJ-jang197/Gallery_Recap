@@ -1,3 +1,4 @@
+// Smoke test: call /auth/me with a signed token without touching Redis helpers.
 import crypto from 'crypto'
 import { SignJWT } from 'jose'
 import { privateKey } from '../src/config/keys.js'

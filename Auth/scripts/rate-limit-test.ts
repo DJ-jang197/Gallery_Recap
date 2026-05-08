@@ -1,5 +1,6 @@
 const base = 'http://localhost:3000'
 
+// Exercises register endpoint burst traffic to validate rate limiting behavior.
 for (let i = 1; i <= 6; i++) {
   const res = await fetch(base + '/auth/register', {
     method: 'POST',

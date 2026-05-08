@@ -1,3 +1,4 @@
+// Validates that an explicitly revoked access token is denied by /auth/me.
 import { jwtVerify } from 'jose'
 import { publicKey } from '../src/config/keys.js'
 import { revokeAccessToken, signAccessToken } from '../src/services/token.service.js'

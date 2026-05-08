@@ -1,3 +1,4 @@
+// Smoke test: generate a local access token and call /auth/me.
 import { signAccessToken } from '../src/services/token.service.js'
 
 const token = await signAccessToken(

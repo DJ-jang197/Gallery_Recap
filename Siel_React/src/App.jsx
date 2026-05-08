@@ -34,12 +34,14 @@ function App() {
   // Privacy-first default: send only EXIF-derived metadata unless explicitly enabled.
   const includeImages = import.meta.env.VITE_INCLUDE_IMAGES === 'true';
 
+  // Advances flow to survey once upload metadata extraction is complete.
   const handleUploadComplete = (extractedMetadata, originalFiles) => {
     setMetadataList(extractedMetadata);
     setPhotoFiles(originalFiles);
     setCurrentStep(STEPS.SURVEY);
   };
 
+  // Converts image files into Gemini inline_data payload shape.
   const fileToBase64WithMime = (file) => new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -53,6 +55,7 @@ function App() {
     reader.onerror = reject;
   });
 
+  // Runs backend synthesis request from current survey + metadata state.
   const handleSurveyComplete = async (surveyState) => {
     setSurveyData(surveyState);
     setCurrentStep(STEPS.SYNTHESIS);
@@ -111,6 +114,7 @@ function App() {
     }
   };
 
+  // Re-runs synthesis using last submitted survey state.
   const handleRegenerate = () => {
     if (surveyData) {
       handleSurveyComplete(surveyData);
@@ -148,6 +152,7 @@ function App() {
     setSurveyData(null);
   };
 
+  // Clears local auth artifacts and returns to hosted login page.
   const handleLogout = () => {
     localStorage.removeItem('siel_cadence');
     sessionStorage.removeItem('accessToken');

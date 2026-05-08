@@ -8,12 +8,14 @@ import './LibraryDrawer.css';
 const LibraryDrawer = ({ isOpen, onClose }) => {
   const { entries, removeEntryFromLibrary } = useContext(LibraryContext);
 
+  // Confirms destructive delete action before mutating archive state.
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to permanently delete this memory?")) {
       removeEntryFromLibrary(id);
     }
   };
 
+  // Formats ISO timestamps for card display in the drawer UI.
   const formatDate = (isoString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(isoString).toLocaleDateString('en-US', options);

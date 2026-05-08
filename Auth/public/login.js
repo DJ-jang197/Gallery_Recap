@@ -13,6 +13,7 @@ let lastIdentifierValue = ''
 const MAX_BURST_ELEMENTS = 50
 const BURST_DURATION_MS = 3600
 
+// Toggles screen dimming when sensitive input is active.
 function setPasswordPrivacy(enabled) {
   if (!pageEl) return
   pageEl.classList.toggle('password-privacy', enabled)
@@ -31,6 +32,7 @@ toggleKeyBtn?.addEventListener('click', () => {
   keyInput.type = keyInput.type === 'password' ? 'text' : 'password'
 })
 
+// Submits credentials to the backend and routes to the Siel app on success.
 loginForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
 
@@ -61,7 +63,7 @@ loginForm?.addEventListener('submit', async (event) => {
       sessionStorage.setItem('accessToken', body.accessToken)
     }
     if (statusEl) statusEl.textContent = 'Login successful. Redirecting...'
-    window.location.assign('/success')
+    window.location.assign('http://localhost:5173/')
   } catch {
     if (statusEl) statusEl.textContent = 'Network error. Try again.'
   }
@@ -73,6 +75,7 @@ if (params.get('created') === '1' && statusEl) {
 }
 
 // --- Key Burst Animation ---
+// Spawns floating letters around center to visualize typed characters.
 function createBurst(letter) {
   if (!burstBackdrop || !letter || !/[a-zA-Z]/.test(letter)) return
 
@@ -123,6 +126,7 @@ function createBurst(letter) {
 }
 
 // Listen for new characters in identifier input
+// Emits bursts only for newly-added characters.
 identifierInput?.addEventListener('input', (e) => {
   const newValue = e.target.value || ''
   

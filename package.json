@@ -8,7 +8,7 @@
     "build:react": "npm run build --prefix Siel_React",
     "build:spring": "powershell -ExecutionPolicy Bypass -File .\\start-backend.ps1 -Build",
     "build:all": "npm run build:auth && npm run build:react && npm run build:spring",
-    "dev:auth": "npm run dev --prefix Auth",
+    "dev:auth": "powershell -ExecutionPolicy Bypass -File .\\start-auth.ps1",
     "dev:react": "npm run dev --prefix Siel_React",
     "dev:spring": "powershell -ExecutionPolicy Bypass -File .\\start-backend.ps1"
   },

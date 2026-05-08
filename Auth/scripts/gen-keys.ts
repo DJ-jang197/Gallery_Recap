@@ -9,6 +9,7 @@ const publicKeyPath = path.join(keysDir, 'public.pem')
 
 fs.mkdirSync(keysDir, { recursive: true })
 
+// Generate RSA keypair used by RS256 JWT signing/verification.
 const { privateKey, publicKey } = generateKeyPairSync('rsa', {
   modulusLength: 2048,
 })
@@ -16,6 +17,7 @@ const { privateKey, publicKey } = generateKeyPairSync('rsa', {
 const privatePem = privateKey.export({ type: 'pkcs8', format: 'pem' })
 const publicPem = publicKey.export({ type: 'spki', format: 'pem' })
 
+// Persist key material with least-privilege filesystem modes.
 fs.writeFileSync(privateKeyPath, privatePem, { encoding: 'utf8', mode: 0o600 })
 fs.writeFileSync(publicKeyPath, publicPem, { encoding: 'utf8', mode: 0o644 })
 

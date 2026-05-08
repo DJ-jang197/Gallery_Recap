@@ -2,10 +2,12 @@ import { pool } from '../src/config/db.js'
 
 // Idempotent schema migration script.
 async function migrate() {
+  // Open a dedicated client so the migration can run transactionally.
   const client = await pool.connect()
   try {
     await client.query('BEGIN')
 
+    // Ensure extension required for UUID generation exists.
     await client.query('CREATE EXTENSION IF NOT EXISTS "pgcrypto";')
 
     await client.query(`
@@ -19,6 +21,7 @@ async function migrate() {
       );
     `)
 
+    // Backward-compatible schema evolution for older user rows.
     await client.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS username TEXT;')
     await client.query(`
       UPDATE users
@@ -40,6 +43,7 @@ async function migrate() {
       );
     `)
 
+    // Add indexes required by login and token-rotation hot paths.
     await client.query(
       'CREATE UNIQUE INDEX IF NOT EXISTS idx_rt_token_hash ON refresh_tokens(token_hash);',
     )

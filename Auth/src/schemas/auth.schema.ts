@@ -28,6 +28,7 @@ export function normalizeEmail(email: string): string {
 }
 
 export function normalizeUsername(username: string): string {
+  // Normalize username for consistent storage and comparisons.
   return username.trim().toLowerCase()
 }
 

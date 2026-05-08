@@ -12,6 +12,7 @@ const GalleryUpload = ({ onComplete, canGoForward, onForward }) => {
   const [files, setFiles] = useState([]);
   const [excludedCount, setExcludedCount] = useState(0);
 
+  // Extracts only metadata needed for synthesis; image bytes are never persisted here.
   const extractMetadata = (file) => {
     return new Promise((resolve) => {
       EXIF.getData(file, function() {
@@ -28,6 +29,7 @@ const GalleryUpload = ({ onComplete, canGoForward, onForward }) => {
     });
   };
 
+  // Filters files by selected cadence window, then runs metadata extraction.
   const handleFileChange = async (e) => {
     const selectedFiles = Array.from(e.target.files);
     const cadence = localStorage.getItem('siel_cadence') || 'biweekly';

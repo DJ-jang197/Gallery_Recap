@@ -11,11 +11,13 @@ import { requireAuth } from '../middleware/auth.js'
 
 // Route module for all authentication endpoints.
 export const authRoutes: FastifyPluginAsync = async (app) => {
+  // Relaxed local limits for development; stricter caps in production.
   const registerRateLimit =
     env.NODE_ENV === 'production'
       ? { max: 5, timeWindow: '1 hour', keyGenerator: (req: any) => req.ip }
       : { max: 50, timeWindow: '15 min', keyGenerator: (req: any) => req.ip }
 
+  // Creates new user account and initial token pair.
   app.post(
     '/register',
     {
@@ -25,6 +27,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     },
     registerHandler,
   )
+  // Authenticates username/email + password.
   app.post(
     '/login',
     {
@@ -38,6 +41,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     },
     loginHandler,
   )
+  // Rotates refresh token and issues a fresh access token.
   app.post(
     '/refresh',
     {
@@ -47,6 +51,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     },
     refreshHandler,
   )
+  // Revokes current refresh session.
   app.post(
     '/logout',
     {
@@ -56,8 +61,10 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     },
     logoutHandler,
   )
+  // Publishes public keys for downstream JWT verification.
   app.get('/jwks.json', jwksHandler)
 
+  // Debug/profile endpoint for currently authenticated user claims.
   app.get(
     '/me',
     { preHandler: requireAuth },

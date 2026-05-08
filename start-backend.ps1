@@ -31,6 +31,7 @@ if (Test-Path $envFile) {
 }
 
 if (-not $env:GEMINI_API_KEY) {
+    # Startup still proceeds; synthesis simply falls back from live Gemini.
     Write-Host "WARNING: GEMINI_API_KEY is not set. Journal generation will not use live Gemini." -ForegroundColor Yellow
 }
 
@@ -45,9 +46,11 @@ if ($portProcess) {
 cd Siel_Spring
 
 if ($Build) {
+    # Build-only mode compiles backend artifacts without launching server.
     Write-Host "Building Siel Metadata Kernel..." -ForegroundColor Cyan
     .\mvnw clean package -DskipTests
 } else {
+    # Default mode runs Spring Boot for local development.
     Write-Host "Starting Siel Metadata Kernel..." -ForegroundColor Cyan
     .\mvnw spring-boot:run
 }

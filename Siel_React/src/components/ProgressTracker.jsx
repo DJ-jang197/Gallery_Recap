@@ -12,6 +12,7 @@ const ProgressTracker = ({ currentStep }) => {
     { id: 'SYNTHESIS', label: 'Narrative' }
   ];
 
+  // Maps symbolic step id to numeric index for active/completed styling.
   const getStepIndex = () => {
     return steps.findIndex(s => s.id === currentStep);
   };

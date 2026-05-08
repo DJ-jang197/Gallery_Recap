@@ -45,10 +45,12 @@ export class AuthServiceError extends Error {
   }
 }
 
+// Shared helper to ensure all bad-login responses stay uniform.
 function invalidCredentials(): never {
   throw new AuthServiceError(401, 'INVALID_CREDENTIALS', 'invalid credentials')
 }
 
+// Increments Redis-based failure counter and applies lockout threshold.
 async function recordLoginFailure(email: string): Promise<number> {
   const key = `login:fail:${email}`
   const n = await redis.incr(key)
@@ -131,6 +133,7 @@ export async function login(
 }
 
 export async function markCompromised(user: UserRow): Promise<void> {
+  // Persist account compromise marker after token reuse compromise events.
   await flagCompromised(user.id)
 }
 

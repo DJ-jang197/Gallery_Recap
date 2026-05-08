@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @Service
 public class GeminiNarratorService {
+    private static final String FALLBACK_NOTICE_PREFIX = "[mock-template]";
     
     private static final Map<String, String> BIBLE_VERSES = Map.of(
         "Peaceful", "\"He leads me beside still waters. He restores my soul.\" - Psalm 23:2-3",
@@ -84,8 +85,12 @@ public class GeminiNarratorService {
             return narrative;
         } catch (Exception e) {
             System.err.println("[Siel Kernel] ERROR calling Gemini: " + e.getMessage());
+            // Quota/rate-limit fallback: return a reusable narrative scaffold.
+            if (isQuotaOrRateLimitError(e)) {
+                return buildFallbackNarrativeTemplate(scores, reflection, metadata);
+            }
             // Avoid leaking details to callers.
-            return "Error calling AI: " + e.getMessage();
+            return "Error calling AI. Please try again in a moment.";
         }
     }
 
@@ -232,6 +237,60 @@ public class GeminiNarratorService {
             return narrativeText.trim();
         }
         throw new Exception("Max retries exceeded");
+    }
+
+    private boolean isQuotaOrRateLimitError(Exception e) {
+        String message = e.getMessage();
+        if (message == null) return false;
+        String lower = message.toLowerCase();
+        return lower.contains("http 429")
+                || lower.contains("quota")
+                || lower.contains("rate limit")
+                || lower.contains("resource exhausted");
+    }
+
+    /**
+     * Generates a deterministic mock narrative template used when Gemini quota is exhausted.
+     * This keeps user flow functional while clearly indicating fallback mode.
+     */
+    String buildFallbackNarrativeTemplate(
+            Map<String, Object> scores,
+            String reflection,
+            List<Map<String, String>> metadata
+    ) {
+        int energy = getInt(scores, "energy", 3);
+        int social = getInt(scores, "social", 3);
+        int stress = getInt(scores, "stress", 3);
+        String safeReflection = (reflection == null || reflection.isBlank())
+                ? "I focused on documenting meaningful moments from the period."
+                : reflection.trim();
+
+        String firstMoment = "a meaningful moment in my routine";
+        String secondMoment = "a quieter reset point in my week";
+        if (metadata != null && !metadata.isEmpty()) {
+            Map<String, String> first = metadata.get(0);
+            firstMoment = formatMetadataMoment(first);
+            if (metadata.size() > 1) {
+                secondMoment = formatMetadataMoment(metadata.get(1));
+            }
+        }
+
+        return FALLBACK_NOTICE_PREFIX + "\n\n"
+                + "During this period, I moved through my days with a steady rhythm and paid close attention to what mattered most. "
+                + "I noticed how my energy shifted between focused stretches and slower pauses, and I tried to stay intentional with how I responded to each situation.\n\n"
+                + "One moment that stood out was " + firstMoment + ". Another memorable point was " + secondMoment + ". "
+                + "These moments helped me see patterns in how I handled pressure, connection, and recovery across the period.\n\n"
+                + "My check-in signals were energy " + energy + "/5, social " + social + "/5, and stress " + stress + "/5. "
+                + "When I felt stretched, I simplified what I could control and returned to clear next steps instead of overcomplicating things.\n\n"
+                + "My reflection for this period is: \"" + safeReflection + "\". "
+                + "Going into the next cycle, I want to keep what worked, reduce unnecessary friction, and stay consistent with the habits that helped me feel grounded.";
+    }
+
+    private String formatMetadataMoment(Map<String, String> metadataItem) {
+        if (metadataItem == null) return "a meaningful moment in my routine";
+        String date = metadataItem.getOrDefault("dateTaken", "an unspecified date");
+        String location = metadataItem.getOrDefault("location", "an unspecified location");
+        return "on " + date + " at " + location;
     }
 
     String extractNarrativeText(JsonNode root) {

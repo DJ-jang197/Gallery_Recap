@@ -6,11 +6,13 @@ const ArchiveView = () => {
   const { entries, removeEntryFromLibrary } = useContext(LibraryContext);
   const [selectedEntry, setSelectedEntry] = useState(null);
 
+  // Formats stored ISO date into human-readable archive labels.
   const formatDate = (isoString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(isoString).toLocaleDateString('en-US', options);
   };
 
+  // Prevents card-open click bubbling when deleting an entry.
   const handleDelete = (e, id) => {
     e.stopPropagation();
     if (window.confirm("Are you sure you want to permanently delete this memory?")) {

@@ -11,6 +11,7 @@ export type UserRow = {
 }
 
 function q(client?: pg.PoolClient) {
+  // Reuse a transaction client when provided; otherwise use shared pool.
   return client ?? pool
 }
 
@@ -30,6 +31,7 @@ export async function findByUsername(
   username: string,
   client?: pg.PoolClient,
 ): Promise<UserRow | null> {
+  // Query user by normalized username.
   const res = await q(client).query<UserRow>(
     'SELECT id, email, username, password_hash, is_compromised, created_at FROM users WHERE username = $1 LIMIT 1',
     [username],

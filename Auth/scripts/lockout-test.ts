@@ -1,6 +1,7 @@
 const base = 'http://localhost:3000'
 
 async function post(path: string, body: any, headers?: Record<string, string>) {
+  // Shared JSON POST helper for lockout test requests.
   const res = await fetch(base + path, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...(headers ?? {}) },
@@ -13,7 +14,7 @@ async function post(path: string, body: any, headers?: Record<string, string>) {
 const email = `victim_${Date.now()}@test.com`
 const password = 'Str0ng!Password12'
 
-// best-effort: register once
+// Best-effort seed account creation for repeated wrong-password attempts.
 await post('/auth/register', { email, password })
 
 for (let i = 1; i <= 11; i++) {
