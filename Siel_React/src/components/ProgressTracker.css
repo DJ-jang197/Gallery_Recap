@@ -2,38 +2,70 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 32px;
+  margin-bottom: 48px;
   width: 100%;
-  max-width: 300px;
+  max-width: 600px;
+  gap: 12px;
+}
+
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  transition: all 0.3s ease;
+  cursor: default;
+}
+
+.step-item:hover .step-circle {
+  transform: translateY(-2px);
+  border-color: var(--deep-slate);
 }
 
 .step-circle {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background: #f1f5f9;
+  background: white;
   color: #94a3b8;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 14px;
   font-weight: 700;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 2px solid #e2e8f0;
+  z-index: 2;
 }
 
 .step-circle.active {
   background: var(--deep-slate);
   color: white;
   border-color: var(--deep-slate);
+  box-shadow: 0 4px 12px rgba(73, 101, 128, 0.2);
+}
+
+.step-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: color 0.3s ease;
+}
+
+.step-label.active {
+  color: var(--deep-slate);
 }
 
 .step-line {
   flex: 1;
-  height: 2px;
+  height: 3px;
   background: #e2e8f0;
-  margin: 0 8px;
-  transition: background 0.3s ease;
+  margin-top: -24px; /* Align with circles */
+  transition: background 0.4s ease;
+  border-radius: 2px;
 }
 
 .step-line.active {

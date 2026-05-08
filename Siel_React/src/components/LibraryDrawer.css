@@ -100,8 +100,9 @@
 }
 
 .entry-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(73, 101, 128, 0.08);
+  transform: translateX(4px);
+  box-shadow: 0 12px 24px rgba(73, 101, 128, 0.12);
+  border-color: var(--sky-blue);
 }
 
 .entry-info {

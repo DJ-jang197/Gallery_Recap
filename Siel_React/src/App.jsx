@@ -4,6 +4,7 @@ import Survey from './components/Survey';
 import SynthesisResult from './components/SynthesisResult';
 import ProgressTracker from './components/ProgressTracker';
 import LibraryDrawer from './components/LibraryDrawer';
+import ArchiveView from './components/ArchiveView';
 import NamingModal from './components/NamingModal';
 import { LibraryContext } from './context/LibraryContext';
 
@@ -14,8 +15,10 @@ const STEPS = {
 };
 
 function App() {
+  const [viewMode, setViewMode] = useState('CREATE'); // 'CREATE' or 'ARCHIVE'
   const [currentStep, setCurrentStep] = useState(STEPS.UPLOAD);
   const [synthesizedContent, setSynthesizedContent] = useState('');
+  const [isSynthesisLoading, setIsSynthesisLoading] = useState(false);
   
   // Library & Modal States
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -28,30 +31,52 @@ function App() {
   const [metadataList, setMetadataList] = useState([]);
   const [photoFiles, setPhotoFiles] = useState([]);
 
+  // Privacy-first default: send only EXIF-derived metadata unless explicitly enabled.
+  const includeImages = import.meta.env.VITE_INCLUDE_IMAGES === 'true';
+
   const handleUploadComplete = (extractedMetadata, originalFiles) => {
     setMetadataList(extractedMetadata);
     setPhotoFiles(originalFiles);
     setCurrentStep(STEPS.SURVEY);
   };
 
-  const fileToBase64 = (file) => new Promise((resolve) => {
+  const fileToBase64WithMime = (file) => new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onload = () => {
+      const result = reader.result;
+      const mimeMatch = typeof result === 'string' ? result.match(/^data:(.*?);base64,/) : null;
+      const mimeType = mimeMatch?.[1] || file.type || 'image/jpeg';
+      const base64 = typeof result === 'string' ? result.split(',')[1] : '';
+      resolve({ mimeType, base64 });
+    };
+    reader.onerror = reject;
   });
 
   const handleSurveyComplete = async (surveyState) => {
     setSurveyData(surveyState);
     setCurrentStep(STEPS.SYNTHESIS);
-    setSynthesizedContent("Analyzing your metadata and crafting your narrative...");
+    setIsSynthesisLoading(true);
+    setSynthesizedContent("");
 
     try {
-      const imagePromises = photoFiles.slice(0, 10).map(f => fileToBase64(f));
-      const base64Images = await Promise.all(imagePromises);
+      const controller = new AbortController();
+      const timeoutMs = 45000;
+      const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
+
+      const imagesPayload = includeImages
+        ? await Promise.all(photoFiles.slice(0, 10).map(f => fileToBase64WithMime(f)))
+        : [];
+
+      const kernelBearerToken = import.meta.env.VITE_KERNEL_BEARER_TOKEN;
+      const headers = { 'Content-Type': 'application/json' };
+      if (kernelBearerToken) {
+        headers.Authorization = `Bearer ${kernelBearerToken}`;
+      }
 
       const response = await fetch('http://localhost:8080/api/synthesize', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           scores: {
             energy: surveyState.energy,
@@ -61,26 +86,28 @@ function App() {
           },
           reflection: surveyState.reflection,
           metadata: metadataList,
-          images: base64Images
-        })
+          images: imagesPayload
+        }),
+        signal: controller.signal
       });
 
+      window.clearTimeout(timeoutId);
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
 
       const data = await response.json();
-      let prose = data.narrative;
-      
-      if (surveyState.wantsVerse) {
-        prose += "\n\n---\n\"The Lord is my shepherd; I shall not want. He makes me lie down in green pastures. He leads me beside still waters.\" (Psalm 23:1-2 NIV)";
-      }
-      
-      setSynthesizedContent(prose);
+      setSynthesizedContent(data.narrative);
     } catch (error) {
       console.error("AI Synthesis failed:", error);
-      setSynthesizedContent("I encountered an error connecting to the Siel Kernel. Please ensure your Java backend is running.");
+      if (error?.name === 'AbortError') {
+        setSynthesizedContent("Timed out while generating your journal entry. Please try again in a moment.");
+      } else {
+        setSynthesizedContent("I encountered an error connecting to the Siel Kernel. Please ensure your Java backend is running.");
+      }
+    } finally {
+      setIsSynthesisLoading(false);
     }
   };
 
@@ -107,8 +134,9 @@ function App() {
 
     await addEntryToLibrary(entryData);
     
-    // Reset flow
+    // Reset flow and switch to archive to see the new entry
     setShowNamingModal(false);
+    setViewMode('ARCHIVE');
     setCurrentStep(STEPS.UPLOAD);
     setSynthesizedContent('');
     setSurveyData(null);
@@ -122,60 +150,56 @@ function App() {
   return (
     <div className="app-layout">
       <header className="app-header">
-        <div 
-          className="menu-trigger" 
-          onClick={() => setIsDrawerOpen(true)}
-          style={{ cursor: 'pointer', position: 'absolute', left: '24px', padding: '8px' }}
-        >
-          <div className="hamburger-lines">
-            <span style={{ display: 'block', width: '20px', height: '2px', background: 'var(--deep-slate)', margin: '4px 0' }}></span>
-            <span style={{ display: 'block', width: '20px', height: '2px', background: 'var(--deep-slate)', margin: '4px 0' }}></span>
-            <span style={{ display: 'block', width: '20px', height: '2px', background: 'var(--deep-slate)', margin: '4px 0' }}></span>
-          </div>
+        <div className="header-tabs">
+          <button 
+            className={`tab-btn ${viewMode === 'CREATE' ? 'active' : ''}`}
+            onClick={() => setViewMode('CREATE')}
+          >
+            JOURNAL
+          </button>
+          <button 
+            className={`tab-btn ${viewMode === 'ARCHIVE' ? 'active' : ''}`}
+            onClick={() => setViewMode('ARCHIVE')}
+          >
+            ARCHIVE
+          </button>
         </div>
 
-        <h1 style={{ textAlign: 'center', margin: 0, width: '100%' }}>Siel</h1>
+        <h1 className="logo-text">Siel</h1>
         
         <button 
           onClick={handleLogout}
-          style={{ 
-            position: 'absolute', 
-            right: '24px', 
-            background: 'none', 
-            border: 'none', 
-            color: '#94a3b8', 
-            cursor: 'pointer',
-            fontSize: '13px',
-            fontWeight: '600'
-          }}
+          className="logout-btn"
         >
           LOGOUT
         </button>
       </header>
       
       <main className="app-main">
-        <ProgressTracker currentStep={currentStep} />
+        {viewMode === 'CREATE' ? (
+          <>
+            <ProgressTracker currentStep={currentStep} />
 
-        {currentStep === STEPS.UPLOAD && (
-          <GalleryUpload onComplete={handleUploadComplete} />
-        )}
-        
-        {currentStep === STEPS.SURVEY && (
-          <Survey onComplete={handleSurveyComplete} />
-        )}
+            {currentStep === STEPS.UPLOAD && (
+              <GalleryUpload onComplete={handleUploadComplete} />
+            )}
+            
+            {currentStep === STEPS.SURVEY && (
+              <Survey onComplete={handleSurveyComplete} />
+            )}
 
-        {currentStep === STEPS.SYNTHESIS && (
-          <SynthesisResult 
-            content={synthesizedContent} 
-            onComplete={handleSynthesisComplete} 
-          />
+            {currentStep === STEPS.SYNTHESIS && (
+              <SynthesisResult 
+                content={synthesizedContent} 
+                onComplete={handleSynthesisComplete} 
+                isLoading={isSynthesisLoading}
+              />
+            )}
+          </>
+        ) : (
+          <ArchiveView />
         )}
       </main>
-
-      <LibraryDrawer 
-        isOpen={isDrawerOpen} 
-        onClose={() => setIsDrawerOpen(false)} 
-      />
 
       {showNamingModal && (
         <NamingModal 

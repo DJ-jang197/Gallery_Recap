@@ -36,13 +36,16 @@ describe('Survey Component', () => {
     render(<Survey />);
     
     // Using string matching for the prompt
-    expect(screen.getByText('How was your fortnight?')).toBeDefined();
+    expect(screen.getByText('How would you describe your last two weeks?')).toBeDefined();
   });
 
-  it('renders Monthly prompt when cadence is monthly', () => {
+  it('renders Monthly prompt when cadence is monthly', async () => {
     localStorage.setItem('siel_cadence', 'monthly');
     render(<Survey />);
     
-    expect(screen.getByText('Define your month in three words.')).toBeDefined();
+    // `Survey` updates cadence in a `useEffect`, so wait for the monthly label.
+    expect(
+      await screen.findByText('How would you describe your last month?')
+    ).toBeDefined();
   });
 });

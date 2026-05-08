@@ -4,3 +4,4 @@ dist/
 target/
 .mvn/wrapper/maven-wrapper.jar
 Siel_Spring/src/main/resources/application.properties
+.env

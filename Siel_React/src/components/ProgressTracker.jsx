@@ -22,8 +22,13 @@ const ProgressTracker = ({ currentStep }) => {
     <div className="progress-tracker">
       {steps.map((step, index) => (
         <React.Fragment key={step.id}>
-          <div className={`step-circle ${index <= currentIndex ? 'active' : ''}`}>
-            {index + 1}
+          <div className="step-item">
+            <div className={`step-circle ${index <= currentIndex ? 'active' : ''}`}>
+              {index < currentIndex ? '✓' : index + 1}
+            </div>
+            <span className={`step-label ${index <= currentIndex ? 'active' : ''}`}>
+              {step.label}
+            </span>
           </div>
           {index < steps.length - 1 && (
             <div className={`step-line ${index < currentIndex ? 'active' : ''}`}></div>

@@ -32,7 +32,8 @@ const Survey = ({ onComplete }) => {
   const [adjectives, setAdjectives] = useState([]);
   const availableAdjectives = [
     'Peaceful', 'Hectic', 'Magical', 'Ordinary', 'Productive', 
-    'Adventurous', 'Nostalgic', 'Melancholic', 'Joyful', 'Quiet'
+    'Adventurous', 'Nostalgic', 'Melancholic', 'Joyful', 'Quiet',
+    'Sad', 'Happy', 'Hopeful', 'Stressed', 'Inspired'
   ];
 
   const handleToggleAdjective = (adj) => {
@@ -94,6 +95,16 @@ const Survey = ({ onComplete }) => {
                 key={adj}
                 type="button"
                 className={`adj-bubble ${adjectives.includes(adj) ? 'active' : ''}`}
+                onClick={() => handleToggleAdjective(adj)}
+              >
+                {adj}
+              </button>
+            ))}
+            {adjectives.filter(adj => !availableAdjectives.includes(adj)).map(adj => (
+              <button
+                key={adj}
+                type="button"
+                className="adj-bubble active"
                 onClick={() => handleToggleAdjective(adj)}
               >
                 {adj}
