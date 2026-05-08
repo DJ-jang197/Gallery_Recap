@@ -61,11 +61,13 @@
 
 .step-line {
   flex: 1;
-  height: 3px;
-  background: #e2e8f0;
+  height: 6px;
+  background: var(--sky-blue);
   margin-top: -24px; /* Align with circles */
-  transition: background 0.4s ease;
-  border-radius: 2px;
+  transition: all 0.4s ease;
+  border-radius: 4px;
+  border: 1px solid var(--deep-slate); /* Navy outline */
+  box-shadow: 0 2px 4px rgba(73, 101, 128, 0.1);
 }
 
 .step-line.active {

@@ -105,13 +105,16 @@
 .gallery-actions {
   display: flex !important;
   justify-content: center !important;
+  align-items: center !important;
   width: 100% !important;
-  margin: 64px 0 0 !important;
-  clear: both;
+  margin-top: 80px !important; /* Force a huge gap */
+  padding-top: 20px !important;
 }
 
 .next-btn {
   width: auto !important;
   min-width: 280px !important;
   margin: 0 auto !important;
+  display: flex !important;
+  justify-content: center !important;
 }
