@@ -103,6 +103,10 @@ public class GeminiNarratorService {
         String metadataSummary = metadata == null || metadata.isEmpty() 
             ? "" 
             : "PHOTO METADATA:\n" + metadata.stream()
+                .filter(m -> {
+                    String loc = m.get("location");
+                    return loc != null && !loc.equalsIgnoreCase("Unknown") && !loc.isBlank();
+                })
                 .map(m -> String.format("- %s at %s", m.get("dateTaken"), m.get("location")))
                 .collect(Collectors.joining("\n"));
 
@@ -116,26 +120,26 @@ public class GeminiNarratorService {
         int stress = getInt(scores, "stress", 3);
 
         String photoLine = includeImages
-                ? "Use the attached photos and the metadata to find the soul of the day."
-                : "Use the metadata to infer what the day felt like, then fuse it with the reflection.";
+                ? "DEEP VISUAL ANALYSIS: Look closely at the attached photos. Describe the scenery (e.g., lakes, mountains, city streets), the atmosphere, and any details that stand out. Don't just list them; tell the story of what you see."
+                : "Use the metadata to infer what the period felt like, then fuse it with the reflection.";
 
         return String.format(
-            "You are Siel, a privacy-first assistant. Write a first-person reflection log entry in plain language. " +
+            "You are Siel, a personal journal assistant. Write a CASUAL and SIMPLE first-person journal entry. " +
+            "Use everyday, friendly language—avoid sophisticated or overly formal words. " +
             "%s " +
-            "VIBE WORDS: %s. ENERGY: %s/5. SOCIAL: %s/5. STRESS: %s/5.\n" +
+            "VIBE: %s. ENERGY: %s/5. SOCIAL: %s/5. STRESS: %s/5.\n" +
             "%s\n\n" +
             "Requirements:\n" +
-            "- Write what I did and how the period went, like a personal activity log and reflection.\n" +
+            "- Write in a conversational, relaxed tone, like I'm talking to a friend.\n" +
             "- Write exactly 3-5 full paragraphs in chronological order, targeting 300-400 words.\n" +
-            "- IMPORTANT: Write in the FIRST PERSON ONLY (use 'I', 'me', 'my'). Never use third person or second person.\n" +
-            "- IMPORTANT: Since this covers a long period (bi-weekly/monthly), DO NOT use words like 'today', 'yesterday', 'tomorrow', or 'tonight'. Refer to specific dates or periods instead.\n" +
-            "- BE DETAILED: Describe the content and atmosphere of the photos. Don't just list them; weave the visual details into the story.\n" +
-            "- Mention 2-3 concrete metadata moments (dateTaken and location) naturally.\n" +
-            "- Keep tone grounded and direct. No analogies, no symbolism, no poetic metaphors.\n" +
-            "- No bullet points. No score callouts. End with a complete sentence.\n" +
-            "- CRITICAL: You must generate a FULL, complete entry. Do not cut off mid-sentence.\n" +
+            "- Write in the FIRST PERSON ONLY ('I', 'me', 'my').\n" +
+            "- DO NOT use 'today', 'yesterday', or 'tomorrow'. Refer to the general period instead.\n" +
+            "- BE VISUAL: If there are photos, mention specific elements (like a lake, a sunset, or a busy cafe) to make it feel real.\n" +
+            "- Mention 2-3 concrete metadata moments naturally if they have locations.\n" +
+            "- NO analogies or poetic metaphors. Keep it grounded.\n" +
+            "- CRITICAL: Ensure the entry is a COMPLETE story. Do not cut off mid-sentence. End the final paragraph with a definitive closing thought.\n" +
             "USER REFLECTION: '%s'\n" +
-            "Write the log entry now (do not mention these requirements):",
+            "Write the casual journal entry now:",
             photoLine,
             adjList,
             energy,

@@ -102,8 +102,8 @@ const Survey = ({ onComplete, onBack }) => {
 
   return (
     <div className="survey-container">
-      <h2>The Soul</h2>
-      <p className="subtitle">Reflect on your inner state.</p>
+      <h2>Quick Reflection</h2>
+      <p className="subtitle">Let's gather our thoughts.</p>
       
       <div className="cadence-switcher">
         <button 

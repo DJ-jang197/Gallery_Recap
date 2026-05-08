@@ -62,7 +62,7 @@ const GalleryUpload = ({ onComplete, canGoForward, onForward }) => {
 
   return (
     <div className="gallery-container">
-      <h2>The Detective</h2>
+      <h2>Upload</h2>
       <p className="subtitle">Select photos to extract local metadata.</p>
       
       <div className={`drop-zone ${files.length > 0 ? 'has-files' : ''}`}>

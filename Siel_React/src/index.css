@@ -43,6 +43,7 @@ html, body {
   backdrop-filter: blur(10px);
   color: var(--deep-slate);
   min-height: 120px;
+  box-shadow: 0 4px 20px rgba(73, 101, 128, 0.15); /* Layered effect */
 }
 
 .logo-container {
@@ -51,17 +52,17 @@ html, body {
   transform: translateX(-50%);
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
+  align-items: center; /* Align items horizontally */
   text-align: left;
 }
 
 .seal-logo-header {
-  height: 44px;
+  height: 48px;
   width: auto;
-  margin-left: -10px; /* Offset the clip-path to keep the image flush */
+  margin-left: -4px; /* Reduced offset to show the arm */
   margin-right: 12px;
-  /* Clip the left edge to remove the black vertical line artifact */
-  clip-path: inset(0 0 0 10px);
+  /* Surgical clip-path to hide the thin black line while keeping the arm */
+  clip-path: inset(0 0 0 4px);
   animation: float 6s ease-in-out infinite;
 }
 
@@ -72,20 +73,23 @@ html, body {
 
 .logo-text {
   margin: 0;
-  font-size: 36px;
+  font-size: 42px; /* Slightly larger */
   font-weight: 600;
   letter-spacing: -1.5px;
   color: var(--deep-slate);
   line-height: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
 }
 
 .logo-motto {
-  margin: 6px 0 0;
-  font-size: 14px;
+  margin: 0;
+  font-size: 16px; /* Slightly larger */
   font-weight: 500;
   letter-spacing: 0.1px;
   color: var(--deep-slate);
-  opacity: 0.8;
+  opacity: 0.7;
 }
 
 .header-tabs {

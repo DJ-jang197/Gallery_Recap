@@ -180,9 +180,8 @@ function App() {
 
         <div className="logo-container">
           <img src="/seal.png" alt="Siel Logo" className="seal-logo-header" />
-          <div className="logo-text-group" style={{ textAlign: 'left' }}>
-            <h1 className="logo-text">Siel</h1>
-            <p className="logo-motto">Recap on your moments.</p>
+          <div className="logo-text-group">
+            <h1 className="logo-text">Siel: <span className="logo-motto">Recap on your moments.</span></h1>
           </div>
         </div>
         

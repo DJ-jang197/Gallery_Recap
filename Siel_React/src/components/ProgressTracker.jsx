@@ -7,8 +7,8 @@ import './ProgressTracker.css';
  */
 const ProgressTracker = ({ currentStep }) => {
   const steps = [
-    { id: 'UPLOAD', label: 'Gallery' },
-    { id: 'SURVEY', label: 'Survey' },
+    { id: 'UPLOAD', label: 'Upload' },
+    { id: 'SURVEY', label: 'Reflection' },
     { id: 'SYNTHESIS', label: 'Narrative' }
   ];
 

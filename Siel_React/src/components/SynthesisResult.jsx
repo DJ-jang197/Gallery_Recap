@@ -6,7 +6,26 @@ import './SynthesisResult.css';
  * Allows user to edit the text directly.
  */
 const SynthesisResult = ({ content, onComplete, onRegenerate, onBack, isLoading = false }) => {
-  const [editableContent, setEditableContent] = useState(content);
+  const [messageIndex, setMessageIndex] = useState(0);
+  const loadingMessages = [
+    "Siel is leafing through your memories...",
+    "Checking out that lake view! Stunning.",
+    "Connecting the dots between your photos...",
+    "Gathering thoughts for your reflection...",
+    "Almost ready! I want to see what I've got..."
+  ];
+
+  useEffect(() => {
+    let interval;
+    if (isLoading) {
+      interval = setInterval(() => {
+        setMessageIndex((prev) => (prev + 1) % loadingMessages.length);
+      }, 2500);
+    } else {
+      setMessageIndex(0);
+    }
+    return () => clearInterval(interval);
+  }, [isLoading]);
 
   // Keep local editable state in sync with incoming generated content.
   useEffect(() => {
@@ -25,8 +44,11 @@ const SynthesisResult = ({ content, onComplete, onRegenerate, onBack, isLoading 
       <div className="narrative-editor">
         {isLoading && (
           <div className="loading-overlay" aria-live="polite">
-            <div className="spinner" />
-            <div className="loading-text">Analyzing your metadata and crafting your narrative...</div>
+            <div className="loader-content">
+              <img src="/seal.png" alt="Siel Loader" className="loader-seal" />
+              <div className="loading-text">{loadingMessages[messageIndex]}</div>
+              <div className="loading-subtext">This will be worth the wait.</div>
+            </div>
           </div>
         )}
         <textarea
