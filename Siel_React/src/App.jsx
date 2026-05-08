@@ -178,11 +178,11 @@ function App() {
           </button>
         </div>
 
-        <div className="logo-container" style={{ display: 'flex', alignItems: 'center' }}>
+        <div className="logo-container">
           <img src="/seal.png" alt="Siel Logo" className="seal-logo-header" />
           <div className="logo-text-group" style={{ textAlign: 'left' }}>
             <h1 className="logo-text">Siel</h1>
-            <p className="logo-motto">Your digital biographer: Recap on your moments.</p>
+            <p className="logo-motto">Recap on your moments.</p>
           </div>
         </div>
         

@@ -50,15 +50,17 @@ html, body {
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
+  flex-direction: row;
+  align-items: flex-start;
+  text-align: left;
 }
 
 .seal-logo-header {
   height: 44px;
-  width: 44px;
-  margin-right: 16px;
+  width: auto;
+  margin-left: -10px; /* Offset the clip-path to keep the image flush */
+  margin-right: 12px;
+  /* Clip the left edge to remove the black vertical line artifact */
   clip-path: inset(0 0 0 10px);
   animation: float 6s ease-in-out infinite;
 }
