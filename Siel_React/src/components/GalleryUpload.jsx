@@ -6,7 +6,7 @@ import './GalleryUpload.css';
  * Component for uploading gallery photos to initiate metadata extraction.
  * Extracts EXIF data (Date Taken, Location) to feed into the AI narrator.
  */
-const GalleryUpload = ({ onComplete }) => {
+const GalleryUpload = ({ onComplete, canGoForward, onForward }) => {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [files, setFiles] = useState([]);
@@ -86,14 +86,15 @@ const GalleryUpload = ({ onComplete }) => {
         )}
       </div>
 
-      <button 
-        className="next-btn" 
-        disabled={files.length === 0 || uploading}
-        onClick={() => {}} // Now handled automatically after extraction
-        style={{ display: files.length > 0 && !uploading ? 'block' : 'none' }}
-      >
-        Continue to Survey
-      </button>
+      <div className="gallery-actions">
+        <button 
+          className="next-btn" 
+          disabled={!canGoForward || uploading}
+          onClick={onForward}
+        >
+          Continue to Survey →
+        </button>
+      </div>
     </div>
   );
 };

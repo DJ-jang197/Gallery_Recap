@@ -13,7 +13,7 @@
 }
 
 .entry-grid-card {
-  background: white;
+  background: var(--beige);
   border-radius: 24px;
   padding: 28px;
   border: 1px solid rgba(73, 101, 128, 0.05);
@@ -92,25 +92,14 @@
 
 /* Detail View */
 .back-btn {
-  background: none;
-  border: none;
-  color: var(--deep-slate);
-  font-weight: 600;
-  cursor: pointer;
   margin-bottom: 24px;
-  display: flex;
-  align-items: center;
   gap: 8px;
-  padding: 8px 0;
-  transition: transform 0.2s ease;
-}
-
-.back-btn:hover {
-  transform: translateX(-4px);
+  padding: 12px 24px;
+  border-radius: 12px;
 }
 
 .detail-card {
-  background: white;
+  background: var(--beige);
   border-radius: 32px;
   padding: 60px;
   box-shadow: 0 24px 64px rgba(73, 101, 128, 0.08);
@@ -162,7 +151,7 @@
   padding: 100px 0;
   color: #94a3b8;
   font-size: 18px;
-  background: rgba(255,255,255,0.4);
+  background: rgba(186, 255, 245, 0.4);
   border-radius: 32px;
   border: 1px dashed rgba(73, 101, 128, 0.1);
 }

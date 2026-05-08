@@ -6,7 +6,7 @@ import './Survey.css';
  * Removed star emoticons for a cleaner text-based scale.
  * Added NIV Bible verse integration.
  */
-const Survey = ({ onComplete }) => {
+const Survey = ({ onComplete, onBack }) => {
   const [cadence, setCadence] = useState('biweekly');
   const [scores, setScores] = useState({ energy: 0, social: 0, stress: 0 });
   const [reflection, setReflection] = useState('');
@@ -48,8 +48,19 @@ const Survey = ({ onComplete }) => {
     }
   };
 
+  const isFormValid = () => {
+    return (
+      scores.energy > 0 &&
+      scores.social > 0 &&
+      scores.stress > 0 &&
+      adjectives.length > 0 &&
+      reflection.trim().length > 0
+    );
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!isFormValid()) return;
     
     const surveyState = {
       cadence,
@@ -85,6 +96,29 @@ const Survey = ({ onComplete }) => {
     <div className="survey-container">
       <h2>The Soul</h2>
       <p className="subtitle">Reflect on your inner state.</p>
+      
+      <div className="cadence-switcher">
+        <button 
+          type="button" 
+          className={`cadence-btn ${cadence === 'biweekly' ? 'active' : ''}`}
+          onClick={() => {
+            setCadence('biweekly');
+            localStorage.setItem('siel_cadence', 'biweekly');
+          }}
+        >
+          Bi-weekly
+        </button>
+        <button 
+          type="button" 
+          className={`cadence-btn ${cadence === 'monthly' ? 'active' : ''}`}
+          onClick={() => {
+            setCadence('monthly');
+            localStorage.setItem('siel_cadence', 'monthly');
+          }}
+        >
+          Monthly
+        </button>
+      </div>
 
       <form className="survey-form" onSubmit={handleSubmit}>
         <div className="rating-group">
@@ -156,9 +190,18 @@ const Survey = ({ onComplete }) => {
           </label>
         </div>
 
-        <button className="submit-btn" type="submit">
-          Generate Journal Entry
-        </button>
+        <div className="survey-actions">
+          <button className="back-btn-secondary" type="button" onClick={onBack}>
+            ← Go Back
+          </button>
+          <button 
+            className={`submit-btn ${!isFormValid() ? 'disabled' : ''}`} 
+            type="submit"
+            disabled={!isFormValid()}
+          >
+            Generate Journal Entry
+          </button>
+        </div>
       </form>
     </div>
   );

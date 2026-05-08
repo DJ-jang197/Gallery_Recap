@@ -8,6 +8,8 @@
   box-shadow: 0 24px 64px rgba(73, 101, 128, 0.08);
 }
 
+
+
 .gallery-container h2 {
   margin: 0 0 8px;
   font-size: 32px;
@@ -29,9 +31,9 @@
   position: relative;
   width: 100%;
   height: 280px;
-  border: 2px dashed var(--peach);
+  border: 2px dashed var(--deep-slate);
   border-radius: 24px;
-  background: #fffefb;
+  background: rgba(186, 221, 255, 0.3);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -96,34 +98,20 @@
 }
 
 .progress-bar .fill {
-  height: 100%;
-  background: var(--sky-blue);
+  background: var(--deep-slate);
   transition: width 0.3s ease;
 }
 
+.gallery-actions {
+  display: flex !important;
+  justify-content: center !important;
+  width: 100% !important;
+  margin: 64px 0 0 !important;
+  clear: both;
+}
+
 .next-btn {
-  width: 100%;
-  height: 56px;
-  border: none;
-  border-radius: 16px;
-  cursor: pointer;
-  margin-top: 32px;
-  font-size: 16px;
-  font-weight: 600;
-  background: var(--deep-slate);
-  color: #ffffff;
-  box-shadow: 0 8px 16px rgba(73, 101, 128, 0.15);
-  transition: all 0.3s ease;
-}
-
-.next-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-.next-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(73, 101, 128, 0.2);
+  width: auto !important;
+  min-width: 280px !important;
+  margin: 0 auto !important;
 }

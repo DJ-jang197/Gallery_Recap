@@ -5,7 +5,7 @@ import './SynthesisResult.css';
  * Component displaying the final synthesized journal entry.
  * Allows user to edit the text directly.
  */
-const SynthesisResult = ({ content, onComplete, isLoading = false }) => {
+const SynthesisResult = ({ content, onComplete, onRegenerate, onBack, isLoading = false }) => {
   const [editableContent, setEditableContent] = useState(content);
 
   // Keep local editable state in sync with incoming generated content.
@@ -38,14 +38,22 @@ const SynthesisResult = ({ content, onComplete, isLoading = false }) => {
         <div className="edit-hint">You can edit the text above to refine your story.</div>
       </div>
 
-      <button
-        className="reset-btn"
-        onClick={() => onComplete(editableContent)}
-        disabled={isLoading}
-        style={isLoading ? { cursor: 'not-allowed', opacity: 0.7 } : undefined}
-      >
-        Complete Reflection
-      </button>
+      <div className="synthesis-actions">
+        <button className="back-btn-secondary" onClick={onBack} disabled={isLoading}>
+          ← Adjust Survey
+        </button>
+        <button className="regen-btn" onClick={onRegenerate} disabled={isLoading}>
+          Regenerate Entry
+        </button>
+        <button
+          className="reset-btn"
+          onClick={() => onComplete(editableContent)}
+          disabled={isLoading}
+          style={isLoading ? { cursor: 'not-allowed', opacity: 0.7 } : undefined}
+        >
+          Complete Reflection
+        </button>
+      </div>
     </div>
   );
 };

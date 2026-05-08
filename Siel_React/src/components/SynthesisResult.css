@@ -47,14 +47,15 @@
   width: 100%;
   min-height: 400px;
   height: min(65vh, 700px);
-  background: #fffefb;
-  border: 1px solid rgba(73, 101, 128, 0.1);
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid var(--deep-slate);
   border-radius: 20px;
   padding: 32px;
   font-size: 18px;
   line-height: 1.8;
-  color: #334155;
+  color: var(--dark-brown);
   resize: vertical;
+  overflow-y: auto;
   font-family: inherit;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
@@ -74,23 +75,60 @@
   font-style: italic;
 }
 
+.synthesis-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.regen-btn {
+  flex: 0.8;
+  height: 52px;
+  border: 1px solid var(--deep-slate);
+  border-radius: 16px;
+  background: var(--sky-blue);
+  color: var(--deep-slate);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.regen-btn:hover:not(:disabled) {
+  background: var(--pale-cyan);
+  transform: translateY(-2px);
+}
+
 .reset-btn {
-  width: 100%;
+  flex: 1.2;
   height: 52px;
   border: none;
   border-radius: 16px;
-  background: var(--deep-slate);
-  color: white;
+  background: var(--sky-blue);
+  color: var(--deep-slate);
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(73, 101, 128, 0.15);
+  box-shadow: 0 4px 12px rgba(73, 101, 128, 0.1);
 }
 
 .reset-btn:hover {
+  background: var(--pale-cyan);
+  transform: translateY(-2px);
+}
+
+.reset-btn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(73, 101, 128, 0.25);
+  background: #3a5168;
+}
+
+.regen-btn:disabled,
+.reset-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
 }
 
 .narrative-editor {

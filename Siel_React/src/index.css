@@ -5,14 +5,15 @@
   --sky-blue: #BADDFF;
   --pale-cyan: #BAFFF5;
   --deep-slate: #496580;
-  --bg-serene: #FFFBF9;
-  --card-bg: #FFFFFF;
+
+  --bg-serene: var(--peach);
+  --card-bg: rgba(255, 255, 255, 0.5);
 }
 
 html, body {
   margin: 0;
   padding: 0;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: var(--bg-serene);
   color: var(--deep-slate);
   min-height: 100vh;
@@ -28,90 +29,156 @@ html, body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: radial-gradient(circle at 50% 0%, var(--peach) 0%, var(--bg-serene) 100%);
+  background: var(--bg-serene);
 }
 
 .app-header {
-  padding: 32px 40px;
+  padding: 40px 48px;
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
-  border-bottom: 1px solid rgba(73, 101, 128, 0.05);
-  background: rgba(255, 255, 255, 0.4);
+  align-items: center;
+  border-bottom: 1px solid rgba(73, 101, 128, 0.1);
+  background: var(--sky-blue);
   backdrop-filter: blur(10px);
+  color: var(--deep-slate);
+  min-height: 120px;
 }
 
-.app-header h1.logo-text {
-  margin: 0;
-  font-size: 28px;
-  font-weight: 600;
-  letter-spacing: -1px;
+.logo-container {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.logo-text {
+  margin: 0;
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: -1.5px;
+  color: var(--deep-slate);
+  line-height: 1;
+}
+
+.logo-motto {
+  margin: 6px 0 0;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+  color: var(--deep-slate);
+  opacity: 0.8;
 }
 
 .header-tabs {
   display: flex;
-  gap: 8px;
-  background: rgba(73, 101, 128, 0.04);
+  gap: 4px;
+  background: rgba(73, 101, 128, 0.08);
   padding: 4px;
-  border-radius: 12px;
+  border-radius: 14px;
+  position: relative;
+  z-index: 1;
 }
 
 .tab-btn {
   background: none;
   border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
+  padding: 10px 20px;
+  border-radius: 10px;
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.5px;
-  color: #94a3b8;
+  letter-spacing: 0.8px;
+  color: rgba(73, 101, 128, 0.6);
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 2;
+  position: relative;
 }
 
 .tab-btn.active {
-  background: white;
   color: var(--deep-slate);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.tab-btn:hover:not(.active) {
+  color: var(--deep-slate);
+}
+
+/* Sliding Background Logic will be in the component, but let's prep the CSS */
+.tab-slider {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  height: calc(100% - 8px);
+  width: calc(50% - 6px);
+  background: var(--pale-cyan);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+}
+
+.tab-slider.right {
+  transform: translateX(calc(100% + 4px));
 }
 
 .logout-btn {
-  background: none;
-  border: none;
-  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--beige);
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
   cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
   transition: all 0.2s ease;
-  letter-spacing: 0.5px;
+}
+
+.logout-btn:hover {
+  background: var(--pale-cyan);
+  color: var(--deep-slate) !important;
+  border-color: var(--pale-cyan);
 }
 
 .app-main {
   flex: 1;
+  width: 100%;
+  overflow: hidden; /* Hide the non-active page */
+  position: relative;
+  padding: 0; /* Remove padding here, move it to page-view */
+}
+
+.page-slider {
+  display: flex;
+  width: 200%; /* Two pages */
+  height: 100%;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(-50%); /* Start with Journal (Right side) */
+}
+
+.page-slider.slide-archive {
+  transform: translateX(0); /* Glide right to Archive */
+}
+
+.page-view {
+  width: 50%; /* Each page is half of 200% */
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 60px 20px 120px;
-  width: 100%;
+  overflow-y: auto;
 }
 
-.gallery-container,
-.survey-container,
-.synthesis-container {
-  animation: cardEnter 320ms ease-out;
-}
-
-@keyframes cardEnter {
+@keyframes slideFadeIn {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateX(20px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
   }
 }
 
@@ -120,9 +187,8 @@ html, body {
   bottom: 0;
   width: 100%;
   height: 80px;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(12px);
-  border-top: 1px solid rgba(73, 101, 128, 0.05);
+  background: var(--sky-blue);
+  border-top: 1px solid rgba(73, 101, 128, 0.1);
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -137,8 +203,9 @@ html, body {
   gap: 4px;
   font-size: 11px;
   font-weight: 600;
-  color: #94a3b8;
+  color: rgba(199, 172, 159, 0.6);
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .nav-item.active {
@@ -159,8 +226,8 @@ html, body {
 .adj-bubble {
   padding: 8px 16px;
   border-radius: 20px;
-  border: 1px solid rgba(73, 101, 128, 0.1);
-  background: white;
+  border: 1px solid rgba(73, 101, 128, 0.2);
+  background: var(--sky-blue);
   color: var(--deep-slate);
   font-size: 13px;
   font-weight: 500;
@@ -169,16 +236,15 @@ html, body {
 }
 
 .adj-bubble:hover {
-  background: #f1f5f9;
+  background: var(--pale-cyan);
   transform: translateY(-2px);
-  border-color: var(--deep-slate);
 }
 
 .adj-bubble.active {
-  background: var(--deep-slate);
-  color: white;
+  background: var(--pale-cyan);
+  color: var(--deep-slate);
   border-color: var(--deep-slate);
-  box-shadow: 0 8px 16px rgba(73, 101, 128, 0.2);
+  box-shadow: 0 8px 16px rgba(73, 101, 128, 0.1);
   transform: translateY(0);
 }
 
@@ -203,30 +269,74 @@ html, body {
 .submit-btn,
 .reset-btn,
 .save-btn,
-.cancel-btn {
+.cancel-btn,
+.regen-btn,
+.back-btn,
+.back-btn-secondary,
+.continue-btn {
+  background: var(--sky-blue);
+  color: var(--deep-slate);
+  border: 1px solid rgba(73, 101, 128, 0.1);
+  border-radius: 16px;
+  height: 56px;
+  padding: 0 32px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .next-btn:hover,
 .submit-btn:hover,
 .reset-btn:hover,
 .save-btn:hover,
-.cancel-btn:hover {
+.cancel-btn:hover,
+.regen-btn:hover,
+.back-btn:hover,
+.back-btn-secondary:hover,
+.continue-btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 24px rgba(73, 101, 128, 0.2);
-  filter: brightness(1.05);
+  background: var(--pale-cyan);
+  color: var(--deep-slate);
+  box-shadow: 0 12px 24px rgba(73, 101, 128, 0.1);
+}
+
+.next-btn:disabled,
+.submit-btn:disabled,
+.reset-btn:disabled,
+.save-btn:disabled,
+.cancel-btn:disabled,
+.regen-btn:disabled,
+.back-btn:disabled,
+.back-btn-secondary:disabled,
+.continue-btn:disabled,
+.submit-btn.disabled {
+  opacity: 0.5;
+  background: #e2e8f0;
+  color: #94a3b8;
+  border-color: #cbd5e1;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 .next-btn:active,
 .submit-btn:active,
 .reset-btn:active,
 .save-btn:active,
-.cancel-btn:active {
+.cancel-btn:active,
+.regen-btn:active,
+.back-btn:active,
+.back-btn-secondary:active,
+.continue-btn:active {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(73, 101, 128, 0.15);
-  filter: brightness(0.95);
+  box-shadow: 0 4px 12px rgba(92, 60, 44, 0.15);
 }
 
 .logout-btn:hover {
@@ -266,3 +376,5 @@ html, body {
     font-size: 9px;
   }
 }
+
+

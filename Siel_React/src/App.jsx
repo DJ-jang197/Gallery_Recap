@@ -111,6 +111,12 @@ function App() {
     }
   };
 
+  const handleRegenerate = () => {
+    if (surveyData) {
+      handleSurveyComplete(surveyData);
+    }
+  };
+
   // Called from SynthesisResult when "Complete Reflection" is clicked
   const handleSynthesisComplete = (editedContent) => {
     setFinalNarrative(editedContent);
@@ -144,13 +150,15 @@ function App() {
 
   const handleLogout = () => {
     localStorage.removeItem('siel_cadence');
-    window.location.href = '/login';
+    sessionStorage.removeItem('accessToken');
+    window.location.href = 'http://localhost:3000/login';
   };
 
   return (
     <div className="app-layout">
       <header className="app-header">
         <div className="header-tabs">
+          <div className={`tab-slider ${viewMode === 'ARCHIVE' ? 'right' : ''}`} />
           <button 
             className={`tab-btn ${viewMode === 'CREATE' ? 'active' : ''}`}
             onClick={() => setViewMode('CREATE')}
@@ -165,7 +173,10 @@ function App() {
           </button>
         </div>
 
-        <h1 className="logo-text">Siel</h1>
+        <div className="logo-container">
+          <h1 className="logo-text">Siel</h1>
+          <p className="logo-motto">Your digital biographer: Recap on your moments.</p>
+        </div>
         
         <button 
           onClick={handleLogout}
@@ -176,29 +187,42 @@ function App() {
       </header>
       
       <main className="app-main">
-        {viewMode === 'CREATE' ? (
-          <>
+        <div className={`page-slider ${viewMode === 'ARCHIVE' ? 'slide-archive' : ''}`}>
+          {/* Archive Page - Left side */}
+          <div className="page-view">
+            <ArchiveView />
+          </div>
+
+          {/* Journal Page - Right side */}
+          <div className="page-view">
             <ProgressTracker currentStep={currentStep} />
 
             {currentStep === STEPS.UPLOAD && (
-              <GalleryUpload onComplete={handleUploadComplete} />
+              <GalleryUpload 
+                onComplete={handleUploadComplete} 
+                canGoForward={metadataList.length > 0}
+                onForward={() => setCurrentStep(STEPS.SURVEY)}
+              />
             )}
             
             {currentStep === STEPS.SURVEY && (
-              <Survey onComplete={handleSurveyComplete} />
+              <Survey 
+                onComplete={handleSurveyComplete} 
+                onBack={() => setCurrentStep(STEPS.UPLOAD)}
+              />
             )}
 
             {currentStep === STEPS.SYNTHESIS && (
               <SynthesisResult 
                 content={synthesizedContent} 
                 onComplete={handleSynthesisComplete} 
+                onRegenerate={handleRegenerate}
+                onBack={() => setCurrentStep(STEPS.SURVEY)}
                 isLoading={isSynthesisLoading}
               />
             )}
-          </>
-        ) : (
-          <ArchiveView />
-        )}
+          </div>
+        </div>
       </main>
 
       {showNamingModal && (

@@ -76,18 +76,7 @@ public class GeminiNarratorService {
             System.out.println("[Siel Kernel] Sending Visual Prompt to Gemini...");
             String narrative = callGemini(prompt, cleanKey, images);
 
-            if (shouldExpandDraft(narrative)) {
-                System.out.println("[Siel Kernel] Draft was short or incomplete; requesting expansion pass...");
-                String expansionPrompt = buildExpansionPrompt(narrative);
-                String expanded = callGemini(expansionPrompt, cleanKey, null);
-                
-                // If expansion is longer or looks more complete, take it.
-                if (expanded.length() > narrative.length() || !shouldExpandDraft(expanded)) {
-                    narrative = expanded;
-                }
-            }
-
-            // Append dynamic bible verse if requested (logic moved here for variety)
+            // Append dynamic bible verse if requested
             if (scores != null && Boolean.TRUE.equals(scores.get("wantsVerse"))) {
                 narrative += "\n\n---\n" + selectVerse(scores);
             }
@@ -96,7 +85,7 @@ public class GeminiNarratorService {
         } catch (Exception e) {
             System.err.println("[Siel Kernel] ERROR calling Gemini: " + e.getMessage());
             // Avoid leaking details to callers.
-            return "Error calling AI.";
+            return "Error calling AI: " + e.getMessage();
         }
     }
 
@@ -132,13 +121,14 @@ public class GeminiNarratorService {
             "%s\n\n" +
             "Requirements:\n" +
             "- Write what I did and how the period went, like a personal activity log and reflection.\n" +
-            "- Use 3-5 paragraphs in chronological order, about 220-360 words total.\n" +
+            "- Write exactly 3-5 full paragraphs in chronological order, targeting 300-400 words.\n" +
+            "- IMPORTANT: Write in the FIRST PERSON ONLY (use 'I', 'me', 'my'). Never use third person or second person.\n" +
             "- IMPORTANT: Since this covers a long period (bi-weekly/monthly), DO NOT use words like 'today', 'yesterday', 'tomorrow', or 'tonight'. Refer to specific dates or periods instead.\n" +
             "- BE DETAILED: Describe the content and atmosphere of the photos. Don't just list them; weave the visual details into the story.\n" +
             "- Mention 2-3 concrete metadata moments (dateTaken and location) naturally.\n" +
             "- Keep tone grounded and direct. No analogies, no symbolism, no poetic metaphors.\n" +
             "- No bullet points. No score callouts. End with a complete sentence.\n" +
-            "- CRITICAL: Ensure you finish the entry completely. Do not cut off mid-sentence or mid-thought.\n" +
+            "- CRITICAL: You must generate a FULL, complete entry. Do not cut off mid-sentence.\n" +
             "USER REFLECTION: '%s'\n" +
             "Write the log entry now (do not mention these requirements):",
             photoLine,
@@ -178,7 +168,7 @@ public class GeminiNarratorService {
         Map<String, Object> payload = new HashMap<>();
         payload.put("contents", List.of(Map.of("parts", parts)));
         payload.put("generationConfig", Map.of(
-                "temperature", 0.35,
+                "temperature", 0.5,
                 "topP", 0.8,
                 "maxOutputTokens", 2048
         ));
@@ -190,44 +180,58 @@ public class GeminiNarratorService {
             throw new IllegalStateException("Gemini API URL is not configured.");
         }
         Map<String, Object> payload = buildGeminiPayload(prompt, images);
-
         String fullUrl = apiUrl + "?key=" + cleanKey;
         URL url = new URL(fullUrl);
-        java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
-        conn.setRequestProperty("Accept", "application/json");
-        conn.setConnectTimeout(30000);
-        conn.setReadTimeout(60000);
-        conn.setDoOutput(true);
-
         String json = objectMapper.writeValueAsString(payload);
-        try (OutputStream os = conn.getOutputStream()) {
-            byte[] input = json.getBytes(StandardCharsets.UTF_8);
-            os.write(input, 0, input.length);
-        }
 
-        int responseCode = conn.getResponseCode();
-        java.io.InputStream stream = responseCode >= 200 && responseCode < 300
-                ? conn.getInputStream()
-                : conn.getErrorStream();
+        int maxRetries = 3;
+        int delayMs = 3000; // Start with 3 second delay
 
-        String response;
-        try (java.util.Scanner scanner = new java.util.Scanner(stream, StandardCharsets.UTF_8)) {
-            scanner.useDelimiter("\\A");
-            response = scanner.hasNext() ? scanner.next() : "";
-        }
+        for (int attempt = 1; attempt <= maxRetries; attempt++) {
+            java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+            conn.setRequestProperty("Accept", "application/json");
+            conn.setConnectTimeout(30000);
+            conn.setReadTimeout(60000);
+            conn.setDoOutput(true);
 
-        if (responseCode < 200 || responseCode >= 300) {
-            throw new Exception("HTTP " + responseCode);
-        }
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = json.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            }
 
-        JsonNode root = objectMapper.readTree(response);
-        String narrativeText = extractNarrativeText(root);
-        if (narrativeText == null || narrativeText.isBlank()) {
-            return "Error: AI response malformed.";
+            int responseCode = conn.getResponseCode();
+
+            java.io.InputStream stream = responseCode >= 200 && responseCode < 300
+                    ? conn.getInputStream()
+                    : conn.getErrorStream();
+
+            String response;
+            try (java.util.Scanner scanner = new java.util.Scanner(stream, StandardCharsets.UTF_8)) {
+                scanner.useDelimiter("\\A");
+                response = scanner.hasNext() ? scanner.next() : "";
+            }
+
+            if ((responseCode == 429 || responseCode >= 500) && attempt < maxRetries) {
+                System.out.println("[Siel Kernel] API returned " + responseCode + ". Retrying in " + delayMs + "ms... (Attempt " + attempt + " of " + maxRetries + ")");
+                Thread.sleep(delayMs);
+                delayMs *= 2; // Exponential backoff
+                continue;
+            }
+
+            if (responseCode < 200 || responseCode >= 300) {
+                throw new Exception("HTTP " + responseCode + " - " + response);
+            }
+
+            JsonNode root = objectMapper.readTree(response);
+            String narrativeText = extractNarrativeText(root);
+            if (narrativeText == null || narrativeText.isBlank()) {
+                return "Error: AI response malformed.";
+            }
+            return narrativeText.trim();
         }
-        return narrativeText.trim();
+        throw new Exception("Max retries exceeded");
     }
 
     String extractNarrativeText(JsonNode root) {

@@ -27,8 +27,8 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: white;
-  color: #94a3b8;
+  background: var(--sky-blue);
+  color: var(--deep-slate);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -41,7 +41,7 @@
 
 .step-circle.active {
   background: var(--deep-slate);
-  color: white;
+  color: var(--pale-cyan);
   border-color: var(--deep-slate);
   box-shadow: 0 4px 12px rgba(73, 101, 128, 0.2);
 }
