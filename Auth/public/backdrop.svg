@@ -1,0 +1,12 @@
+<svg viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1440" height="900" fill="transparent"/>
+  <!-- Top layered waves with higher contrast -->
+  <path d="M0,0 L1440,0 L1440,180 Q1000,280 720,180 T0,230 Z" fill="#FEC18B" opacity="0.25" stroke="#496580" stroke-width="0.5"/>
+  <path d="M0,0 L1000,0 Q700,150 400,0 Z" fill="#BADDFF" opacity="0.2" stroke="#496580" stroke-width="0.5"/>
+  
+  <!-- Bottom layered landscape waves with higher contrast -->
+  <path d="M-100,700 Q300,500 720,750 T1540,600 L1540,900 L-100,900 Z" fill="#FEC18B" opacity="0.4" stroke="#496580" stroke-width="0.5"/>
+  <path d="M-200,780 Q400,600 850,850 T1600,700 L1600,900 L-200,900 Z" fill="#BADDFF" opacity="0.3" stroke="#496580" stroke-width="0.5"/>
+  <path d="M-50,850 Q500,750 900,880 T1500,800 L1500,900 L-50,900 Z" fill="#BAFFF5" opacity="0.25" stroke="#496580" stroke-width="0.5"/>
+  <path d="M400,900 Q800,800 1200,900 Z" fill="#496580" opacity="0.1" stroke="#496580" stroke-width="0.5"/>
+</svg>

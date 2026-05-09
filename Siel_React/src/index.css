@@ -1,5 +1,5 @@
 /* Global theme containers/tokens shared by all React pages and components. */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
 
 :root {
   --peach: #FFDBBB;
@@ -8,18 +8,22 @@
   --deep-slate: #496580;
 
   --bg-serene: var(--peach);
-  --card-bg: rgba(255, 255, 255, 0.5);
+  --card-bg: #ffffff; /* Opaque white */
 }
 
 html, body {
   margin: 0;
   padding: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Montserrat', sans-serif;
   background-color: var(--bg-serene);
   color: var(--deep-slate);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+*, *::before, *::after, button, input, textarea, select {
+  font-family: 'Montserrat', sans-serif !important;
 }
 
 * {
@@ -30,7 +34,11 @@ html, body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--bg-serene);
+  background-image: url('/backdrop.svg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
 }
 
 .app-header {
@@ -38,9 +46,8 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(73, 101, 128, 0.1);
+  border-bottom: 1px solid rgba(73, 101, 128, 0.3);
   background: var(--sky-blue);
-  backdrop-filter: blur(10px);
   color: var(--deep-slate);
   min-height: 120px;
   box-shadow: 0 4px 20px rgba(73, 101, 128, 0.15); /* Layered effect */
@@ -59,10 +66,7 @@ html, body {
 .seal-logo-header {
   height: 48px;
   width: auto;
-  margin-left: -4px; /* Reduced offset to show the arm */
   margin-right: 12px;
-  /* Surgical clip-path to hide the thin black line while keeping the arm */
-  clip-path: inset(0 0 0 4px);
   animation: float 6s ease-in-out infinite;
 }
 
@@ -143,22 +147,31 @@ html, body {
   transform: translateX(calc(100% + 4px));
 }
 
+.logout-container {
+  background: rgba(73, 101, 128, 0.08);
+  padding: 4px;
+  border-radius: 14px;
+  z-index: 1;
+}
+
 .logout-btn {
-  background: rgba(255, 255, 255, 0.1);
+  padding: 10px 24px;
+  background: var(--sky-blue);
   border: 1px solid var(--deep-slate);
   color: var(--deep-slate);
-  padding: 8px 16px;
   border-radius: 12px;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  z-index: 10;
 }
 
 .logout-btn:hover {
-  background: var(--pale-cyan);
+  background: var(--peach);
   color: var(--deep-slate) !important;
-  border-color: var(--pale-cyan);
+  border-color: var(--deep-slate);
+  transform: scale(1.05);
 }
 
 .app-main {
@@ -208,7 +221,7 @@ html, body {
   width: 100%;
   height: 80px;
   background: var(--sky-blue);
-  border-top: 1px solid rgba(73, 101, 128, 0.1);
+  border-top: 1px solid rgba(73, 101, 128, 0.3);
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -246,7 +259,7 @@ html, body {
 .adj-bubble {
   padding: 8px 16px;
   border-radius: 20px;
-  border: 1px solid rgba(73, 101, 128, 0.2);
+  border: 1px solid rgba(73, 101, 128, 0.3);
   background: var(--sky-blue);
   color: var(--deep-slate);
   font-size: 13px;
@@ -296,7 +309,7 @@ html, body {
 .continue-btn {
   background: var(--sky-blue);
   color: var(--deep-slate);
-  border: 1px solid rgba(73, 101, 128, 0.1);
+  border: 1px solid rgba(73, 101, 128, 0.3);
   border-radius: 16px;
   height: 56px;
   padding: 0 32px;

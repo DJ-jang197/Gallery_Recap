@@ -106,6 +106,7 @@ const Survey = ({ onComplete, onBack }) => {
       <p className="subtitle">Let's gather our thoughts.</p>
       
       <div className="cadence-switcher">
+        <div className={`cadence-slider ${cadence === 'monthly' ? 'right' : ''}`} />
         <button 
           type="button" 
           className={`cadence-btn ${cadence === 'biweekly' ? 'active' : ''}`}

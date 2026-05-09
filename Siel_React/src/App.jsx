@@ -185,12 +185,14 @@ function App() {
           </div>
         </div>
         
-        <button 
-          onClick={handleLogout}
-          className="logout-btn"
-        >
-          LOGOUT
-        </button>
+        <div className="logout-container">
+          <button 
+            onClick={handleLogout}
+            className="logout-btn"
+          >
+            LOGOUT
+          </button>
+        </div>
       </header>
       
       <main className="app-main">
