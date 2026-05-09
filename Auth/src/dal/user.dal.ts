@@ -7,6 +7,7 @@ export type UserRow = {
   username: string
   password_hash: string
   is_compromised: boolean
+  is_verified: boolean
   created_at: Date
 }
 
@@ -21,7 +22,7 @@ export async function findByEmail(
   client?: pg.PoolClient,
 ): Promise<UserRow | null> {
   const res = await q(client).query<UserRow>(
-    'SELECT id, email, username, password_hash, is_compromised, created_at FROM users WHERE email = $1 LIMIT 1',
+    'SELECT id, email, username, password_hash, is_compromised, is_verified, created_at FROM users WHERE email = $1 LIMIT 1',
     [email],
   )
   return res.rows[0] ?? null
@@ -33,7 +34,7 @@ export async function findByUsername(
 ): Promise<UserRow | null> {
   // Query user by normalized username.
   const res = await q(client).query<UserRow>(
-    'SELECT id, email, username, password_hash, is_compromised, created_at FROM users WHERE username = $1 LIMIT 1',
+    'SELECT id, email, username, password_hash, is_compromised, is_verified, created_at FROM users WHERE username = $1 LIMIT 1',
     [username],
   )
   return res.rows[0] ?? null
@@ -47,7 +48,7 @@ export async function createUser(
   client?: pg.PoolClient,
 ): Promise<UserRow> {
   const res = await q(client).query<UserRow>(
-    'INSERT INTO users (email, username, password_hash) VALUES ($1, $2, $3) RETURNING id, email, username, password_hash, is_compromised, created_at',
+    'INSERT INTO users (email, username, password_hash) VALUES ($1, $2, $3) RETURNING id, email, username, password_hash, is_compromised, is_verified, created_at',
     [email, username, hash],
   )
   return res.rows[0]!

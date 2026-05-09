@@ -56,7 +56,7 @@ async function recordLoginFailure(email: string): Promise<number> {
   const n = await redis.incr(key)
   await redis.expire(key, 900)
   if (n > 10) {
-    throw new AuthServiceError(429, 'ACCOUNT_LOCKED', 'account locked')
+    throw new AuthServiceError(429, 'ACCOUNT_LOCKED', 'Account Locked')
   }
   return n
 }
@@ -98,7 +98,11 @@ export async function login(
   }
 
   if (user.is_compromised) {
-    throw new AuthServiceError(403, 'ACCOUNT_COMPROMISED', 'account compromised')
+    throw new AuthServiceError(403, 'ACCOUNT_COMPROMISED', 'Account Compromised')
+  }
+
+  if (!user.is_verified) {
+    throw new AuthServiceError(403, 'EMAIL_NOT_VERIFIED', 'Email Not Verified')
   }
 
   const ok = await argon2.verify(user.password_hash, password, ARGON2_OPTS)
@@ -144,7 +148,7 @@ export function ensureRegisterPasswordSafe(emailRaw: string, password: string) {
     throw new AuthServiceError(
       400,
       'PASSWORD_CONTAINS_EMAIL',
-      'password must not contain email local-part',
+      'Password Must Not Contain Email Local-Part',
     )
   }
 }
@@ -170,7 +174,7 @@ export async function register(
 
   const existing = (await findByUsername(username)) ?? (await findByEmail(email))
   if (existing) {
-    throw new AuthServiceError(409, 'USERNAME_IN_USE', 'username already registered')
+    throw new AuthServiceError(409, 'USERNAME_IN_USE', 'Username Already Registered')
   }
 
   const passwordHash = await argon2.hash(password, ARGON2_OPTS)
@@ -239,18 +243,28 @@ export async function rotateRefreshToken(
     if (!row) {
       await client.query('COMMIT')
       committed = true
-      throw new AuthServiceError(401, 'UNAUTHORIZED', 'unauthorized')
+      throw new AuthServiceError(401, 'UNAUTHORIZED', 'Unauthorized')
     }
 
     // Path 2 — token reuse detected
     if (row.revoked === true) {
+      // Check if this token was recently rotated (grace period for concurrent requests)
+      const graceKey = `grace:${tokenHash}`
+      const graceData = await redis.get(graceKey)
+      if (graceData) {
+        const cached = JSON.parse(graceData)
+        await client.query('COMMIT')
+        committed = true
+        return cached
+      }
+
       await revokeFamily(row.family_id, client)
       await flagCompromised(row.user_id, client)
       await client.query('COMMIT')
       committed = true
       log.warn({ event: 'TOKEN_REUSE', familyId: row.family_id, userId: row.user_id })
       log.warn({ event: 'ACCOUNT_COMPROMISED', userId: row.user_id, reason: 'TOKEN_REUSE' })
-      throw new AuthServiceError(401, 'TOKEN_REUSE', 'token reuse')
+      throw new AuthServiceError(401, 'TOKEN_REUSE', 'Token Reuse')
     }
 
     // Path 3 — token expired
@@ -259,7 +273,7 @@ export async function rotateRefreshToken(
       await revokeToken(row.id, client)
       await client.query('COMMIT')
       committed = true
-      throw new AuthServiceError(401, 'TOKEN_EXPIRED', 'token expired')
+      throw new AuthServiceError(401, 'TOKEN_EXPIRED', 'Token Expired')
     }
 
     // Path 4 — valid rotation
@@ -291,9 +305,14 @@ export async function rotateRefreshToken(
     }
 
     const accessToken = await signAccessToken(row.user_id, email)
+    
+    // Set grace period in Redis to handle concurrent retries
+    const result = { accessToken, rawRefreshToken: newRaw }
+    await redis.set(`grace:${tokenHash}`, JSON.stringify(result), 'EX', 5)
+
     await client.query('COMMIT')
     committed = true
-    return { accessToken, rawRefreshToken: newRaw }
+    return result
   } catch (err) {
     if (!committed) {
       await client.query('ROLLBACK')

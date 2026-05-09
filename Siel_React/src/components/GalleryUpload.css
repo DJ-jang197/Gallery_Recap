@@ -20,6 +20,20 @@
   text-align: center;
 }
 
+.user-greeting {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+  margin-bottom: 8px;
+  opacity: 0.8;
+}
+
+.user-greeting .username {
+  color: var(--deep-slate);
+  font-weight: 600;
+}
+
 .gallery-container .subtitle {
   margin: 0 0 24px;
   font-size: 14px;

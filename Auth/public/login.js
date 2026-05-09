@@ -39,11 +39,11 @@ loginForm?.addEventListener('submit', async (event) => {
   const identifier = identifierInput?.value?.trim() ?? ''
   const password = keyInput?.value ?? ''
   if (!identifier || !password) {
-    if (statusEl) statusEl.textContent = 'Enter both username and security key.'
+    if (statusEl) statusEl.textContent = 'Enter both Username and Password.'
     return
   }
 
-  if (statusEl) statusEl.textContent = 'Signing in...'
+  if (statusEl) statusEl.textContent = 'Signing In...'
 
   try {
     const res = await fetch('/auth/login', {
@@ -55,23 +55,23 @@ loginForm?.addEventListener('submit', async (event) => {
     const body = await res.json().catch(() => ({}))
 
     if (!res.ok) {
-      if (statusEl) statusEl.textContent = body?.error ?? 'Login failed.'
+      if (statusEl) statusEl.textContent = body?.error ?? 'Login Failed.'
       return
     }
 
     if (body?.accessToken) {
       sessionStorage.setItem('accessToken', body.accessToken)
     }
-    if (statusEl) statusEl.textContent = 'Login successful. Redirecting...'
+    if (statusEl) statusEl.textContent = 'Login Successful. Redirecting...'
     window.location.assign('http://localhost:5173/')
   } catch {
-    if (statusEl) statusEl.textContent = 'Network error. Try again.'
+    if (statusEl) statusEl.textContent = 'Network Error. Please try again.'
   }
 })
 
 const params = new URLSearchParams(window.location.search)
 if (params.get('created') === '1' && statusEl) {
-  statusEl.textContent = 'Account created successfully! Please log in.'
+  statusEl.textContent = 'Account Created Successfully! Please Log In.'
 }
 
 // --- Key Burst Animation ---

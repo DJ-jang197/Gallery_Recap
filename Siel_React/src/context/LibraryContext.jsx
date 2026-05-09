@@ -49,6 +49,22 @@ export const LibraryProvider = ({ children }) => {
     }
   };
 
+  // Toggles pin status for an entry.
+  const togglePinEntry = async (id) => {
+    try {
+      const entry = entries.find(e => e.id === id);
+      if (!entry) return false;
+      
+      const updatedEntry = { ...entry, isPinned: !entry.isPinned };
+      await saveEntry(updatedEntry);
+      await refreshEntries();
+      return true;
+    } catch (error) {
+      console.error("Failed to toggle pin status:", error);
+      return false;
+    }
+  };
+
   return (
     <LibraryContext.Provider 
       value={{ 
@@ -56,6 +72,7 @@ export const LibraryProvider = ({ children }) => {
         loading, 
         addEntryToLibrary, 
         removeEntryFromLibrary,
+        togglePinEntry,
         refreshEntries
       }}
     >

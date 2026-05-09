@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 import GalleryUpload from './components/GalleryUpload';
 import Survey from './components/Survey';
 import SynthesisResult from './components/SynthesisResult';
@@ -30,6 +30,50 @@ function App() {
 
   const [metadataList, setMetadataList] = useState([]);
   const [photoFiles, setPhotoFiles] = useState([]);
+  const [userProfile, setUserProfile] = useState(null);
+
+  const hasFetchedProfile = useRef(false);
+
+  // Fetch user profile from Auth service on mount
+  useEffect(() => {
+    if (hasFetchedProfile.current) return;
+    hasFetchedProfile.current = true;
+
+    const fetchProfile = async () => {
+      try {
+        // Step 1: Silent Refresh to get a valid access token from cookies
+        // credentials: 'include' allows the browser to send the refresh_token cookie
+        const refreshRes = await fetch('http://localhost:3000/auth/refresh', {
+          method: 'POST',
+          credentials: 'include'
+        });
+        
+        if (!refreshRes.ok) {
+          // If refresh fails, we're simply not logged in; ignore silently.
+          return;
+        }
+        
+        const { accessToken } = await refreshRes.json();
+        sessionStorage.setItem('accessToken', accessToken);
+
+        // Step 2: Use the fresh access token to fetch user profile
+        const profileRes = await fetch('http://localhost:3000/auth/me', {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`
+          }
+        });
+        
+        if (profileRes.ok) {
+          const data = await profileRes.json();
+          setUserProfile(data.user);
+        }
+      } catch (error) {
+        // Log error but don't disrupt user flow; they might just be unauthenticated.
+        console.error("Identity handshake failed:", error);
+      }
+    };
+    fetchProfile();
+  }, []);
 
   // Send images to Gemini by default for real visual grounding; set VITE_INCLUDE_IMAGES=false to send metadata only.
   const includeImages = import.meta.env.VITE_INCLUDE_IMAGES !== 'false';
@@ -71,7 +115,7 @@ function App() {
         ? await Promise.all(photoFiles.slice(0, 10).map(f => fileToBase64WithMime(f)))
         : [];
 
-      const kernelBearerToken = import.meta.env.VITE_KERNEL_BEARER_TOKEN;
+      const kernelBearerToken = sessionStorage.getItem('accessToken') || import.meta.env.VITE_KERNEL_BEARER_TOKEN;
       const headers = { 'Content-Type': 'application/json' };
       if (kernelBearerToken) {
         headers.Authorization = `Bearer ${kernelBearerToken}`;
@@ -211,6 +255,7 @@ function App() {
                 onComplete={handleUploadComplete} 
                 canGoForward={metadataList.length > 0}
                 onForward={() => setCurrentStep(STEPS.SURVEY)}
+                username={userProfile?.username || userProfile?.email?.split('@')[0]}
               />
             )}
             

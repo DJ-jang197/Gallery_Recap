@@ -37,10 +37,10 @@ passwordInput?.addEventListener('input', () => {
     return
   }
   if (checkPasswordStrength(value)) {
-    hintEl.textContent = 'Password baseline check passed.'
+    hintEl.textContent = 'Password Baseline Check Passed.'
   } else {
     hintEl.textContent =
-      'Use at least 12 chars, 1 uppercase, 1 number, and 1 special character.'
+      'Use at least 12 Characters, 1 Uppercase, 1 Number, and 1 Special Character.'
   }
 })
 
@@ -61,7 +61,7 @@ signupForm?.addEventListener('submit', async (event) => {
   const password = passwordInput?.value ?? ''
 
   if (!username || !password) {
-    statusEl.textContent = 'Enter a username and password.'
+    statusEl.textContent = 'Enter a Username and Password.'
     return
   }
   if (!/^[a-z0-9._@-]+$/.test(username)) {
@@ -70,11 +70,11 @@ signupForm?.addEventListener('submit', async (event) => {
   }
   if (!checkPasswordStrength(password)) {
     statusEl.textContent =
-      'Password must be 12+ chars with uppercase, number, and special character.'
+      'Password must be 12+ Characters with Uppercase, Number, and Special Character.'
     return
   }
 
-  statusEl.textContent = 'Creating account...'
+  statusEl.textContent = 'Creating Account...'
 
   try {
     const res = await fetch('/auth/register', {
@@ -87,16 +87,16 @@ signupForm?.addEventListener('submit', async (event) => {
 
     if (!res.ok) {
       if (res.status === 409) {
-        statusEl.textContent = 'Username is already taken.'
+        statusEl.textContent = 'Username Is Already Taken.'
         return
       }
-      statusEl.textContent = body?.error ?? 'Sign up failed.'
+      statusEl.textContent = body?.error ?? 'Sign Up Failed.'
       return
     }
 
     window.location.assign('/login?created=1')
   } catch {
-    statusEl.textContent = 'Network error. Try again.'
+    statusEl.textContent = 'Network Error. Please try again.'
   }
 })
 

@@ -82,8 +82,11 @@ public class GeminiNarratorService {
         }
 
         try {
+            // SECURITY: Sanitize user input to prevent HTML injection and reduce prompt noise.
+            String cleanReflection = reflection == null ? "" : reflection.replaceAll("<[^>]*>", "").trim();
+            
             boolean includeImages = images != null && !images.isEmpty();
-            String prompt = buildPrompt(scores, reflection, metadata, includeImages);
+            String prompt = buildPrompt(scores, cleanReflection, metadata, includeImages);
             System.out.println("[Siel Kernel] Sending Visual Prompt to Gemini...");
             GeminiCallResult first = callGemini(prompt, cleanKey, images);
             String narrative = first.text;

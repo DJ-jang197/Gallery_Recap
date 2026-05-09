@@ -2,13 +2,13 @@ package com.siel.kernel.controller;
 
 import com.siel.kernel.service.GeminiNarratorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,14 +23,10 @@ import java.util.concurrent.TimeUnit;
  */
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = {"http://localhost:5173", "http://127.0.0.1:5173"})
 public class SielApiController {
 
     @Autowired
     private GeminiNarratorService narratorService;
-
-    @Value("${siel.kernel.bearer-token:}")
-    private String requiredBearerToken;
 
     private final ConcurrentHashMap<String, RateState> rateLimit = new ConcurrentHashMap<>();
     private final long rateWindowMs = 60_000;
@@ -65,29 +61,18 @@ public class SielApiController {
     public ResponseEntity<Map<String, String>> synthesize(
             @RequestBody Map<String, Object> request,
             HttpServletRequest servletRequest,
-            @RequestHeader(value = "Authorization", required = false) String authorizationHeader
+            @AuthenticationPrincipal Jwt jwt
     ) {
         if (isRateLimited(servletRequest)) {
             return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
-                    .body(Map.of("error", "Rate limit exceeded."));
+                    .body(Map.of("error", "Rate Limit Exceeded."));
         }
 
-        // Security: Use constant-time comparison to prevent timing attacks.
-        if (requiredBearerToken != null && !requiredBearerToken.isBlank()) {
-            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(Map.of("error", "Unauthorized."));
-            }
-            String providedToken = authorizationHeader.substring(7).trim();
-            if (!MessageDigest.isEqual(providedToken.getBytes(), requiredBearerToken.trim().getBytes())) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(Map.of("error", "Unauthorized."));
-            }
-        } else {
-            // HIGH: Reject requests if authentication is expected but not configured.
-            // In production, this should never be blank.
-            System.err.println("[SECURITY WARNING] Synthesis endpoint called but requiredBearerToken is not set.");
-        }
+        // AUDIT: Every request is now tied to a cryptographically verified User ID.
+        // This prevents IDOR by ensuring we know exactly who is calling the kernel.
+        String userId = jwt.getSubject();
+        String userEmail = jwt.getClaimAsString("email");
+        System.out.println("[AUDIT] Synthesis initiated by User: " + userId + " (" + userEmail + ") from IP: " + servletRequest.getRemoteAddr());
 
         // Input Validation & Sanitization
         try {

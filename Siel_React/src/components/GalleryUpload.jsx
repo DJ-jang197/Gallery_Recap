@@ -6,7 +6,7 @@ import './GalleryUpload.css';
  * Component for uploading gallery photos to initiate metadata extraction.
  * Extracts EXIF data (Date Taken, Location) to feed into the AI narrator.
  */
-const GalleryUpload = ({ onComplete, canGoForward, onForward }) => {
+const GalleryUpload = ({ onComplete, canGoForward, onForward, username }) => {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [files, setFiles] = useState([]);
@@ -70,8 +70,13 @@ const GalleryUpload = ({ onComplete, canGoForward, onForward }) => {
 
   return (
     <div className="gallery-container">
+      {username && (
+        <div className="user-greeting">
+          Good to have you here, <span className="username">{username}</span>.
+        </div>
+      )}
       <h2>Upload</h2>
-      <p className="subtitle">Select your cadence and photos to extract local metadata.</p>
+      <p className="subtitle">Pick your timeframe and photos to start your story.</p>
 
       <div className="cadence-toggle-container">
         <div className="header-tabs">

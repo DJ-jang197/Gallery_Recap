@@ -22,20 +22,19 @@
           <label for="identifier">Username</label>
           <input id="identifier" type="text" placeholder="your.username" required />
 
-          <label for="securityKey">Security Key</label>
+          <label for="securityKey">Password</label>
           <div class="key-input">
             <input
               id="securityKey"
               type="password"
-              placeholder="Enter your security key"
+              placeholder="Enter your password"
               required
             />
-            <button type="button" id="toggleKey" class="eye-btn" aria-label="Show security key">
+            <button type="button" id="toggleKey" class="eye-btn" aria-label="Show password">
               👁
             </button>
           </div>
-
-          <button type="submit" class="primary-btn">Authenticate</button>
+          <button type="submit" class="primary-btn">Login</button>
         </form>
         <p id="loginStatus" class="status" aria-live="polite"></p>
 
