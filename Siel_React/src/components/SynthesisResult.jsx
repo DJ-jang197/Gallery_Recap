@@ -10,7 +10,7 @@ const SynthesisResult = ({ content, onComplete, onRegenerate, onBack, isLoading 
   const [messageIndex, setMessageIndex] = useState(0);
   const loadingMessages = [
     "Siel is leafing through your memories...",
-    "Checking out that lake view! Stunning.",
+    "Stunning flicks you got here!",
     "Connecting the dots between your photos...",
     "Gathering thoughts for your reflection...",
     "Almost ready! I want to see what I've got..."

@@ -47,7 +47,7 @@ export class AuthServiceError extends Error {
 
 // Shared helper to ensure all bad-login responses stay uniform.
 function invalidCredentials(): never {
-  throw new AuthServiceError(401, 'INVALID_CREDENTIALS', 'invalid credentials')
+  throw new AuthServiceError(401, 'INVALID_CREDENTIALS', 'Invalid Credentials')
 }
 
 // Increments Redis-based failure counter and applies lockout threshold.
