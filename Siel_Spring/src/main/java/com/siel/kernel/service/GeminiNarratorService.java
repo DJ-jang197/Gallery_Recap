@@ -127,12 +127,15 @@ public class GeminiNarratorService {
     ) {
         String metadataSummary = metadata == null || metadata.isEmpty() 
             ? "" 
-            : "PHOTO METADATA:\n" + metadata.stream()
-                .filter(m -> {
+            : "PHOTO METADATA (Dates and Places):\n" + metadata.stream()
+                .map(m -> {
                     String loc = m.get("location");
-                    return loc != null && !loc.equalsIgnoreCase("Unknown") && !loc.isBlank();
+                    String date = m.get("dateTaken");
+                    if (loc == null || loc.equalsIgnoreCase("Unknown") || loc.isBlank()) {
+                        return String.format("- %s (Location unrecorded)", date);
+                    }
+                    return String.format("- %s at %s", date, loc);
                 })
-                .map(m -> String.format("- %s at %s", m.get("dateTaken"), m.get("location")))
                 .collect(Collectors.joining("\n"));
 
         Object adjObj = scores == null ? null : scores.get("adjectives");
@@ -145,8 +148,8 @@ public class GeminiNarratorService {
         int stress = getInt(scores, "stress", 3);
 
         String photoLine = includeImages
-                ? "DEEP VISUAL ANALYSIS: Look closely at the attached photos. Describe the scenery (e.g., lakes, mountains, city streets), the atmosphere, and any details that stand out. Don't just list them; tell the story of what you see."
-                : "Use the metadata to infer what the period felt like, then fuse it with the reflection.";
+                ? "DEEP VISUAL ANALYSIS: The user has attached photos. You MUST look closely at these images. Describe the scenery, the lighting, the colors, and any specific objects or activities you see. Fuse these visual details into the narrative as if you are living through them. Don't just list them; make them the heart of the story."
+                : "Use the metadata timestamps to infer the rhythm of the period, then fuse it with the user's reflection.";
 
         return String.format(
             "You are Siel, a personal journal assistant. Write a CASUAL and SIMPLE first-person journal entry. " +
@@ -159,8 +162,8 @@ public class GeminiNarratorService {
             "- Write exactly 3-5 full paragraphs in chronological order, targeting 300-400 words.\n" +
             "- Write in the FIRST PERSON ONLY ('I', 'me', 'my').\n" +
             "- DO NOT use 'today', 'yesterday', or 'tomorrow'. Refer to the general period instead.\n" +
-            "- BE VISUAL: If there are photos, mention specific elements (like a lake, a sunset, or a busy cafe) to make it feel real.\n" +
-            "- Mention 2-3 concrete metadata moments naturally if they have locations.\n" +
+            "- BE VISUAL: Use the attached images to mention specific elements (like a lake, a sunset, or a busy cafe) to make it feel real.\n" +
+            "- Mention 2-3 concrete metadata moments naturally using the dates provided.\n" +
             "- NO analogies or poetic metaphors. Keep it grounded.\n" +
             "- CRITICAL: Ensure the entry is a COMPLETE story. Do not cut off mid-sentence. End the final paragraph with a definitive closing thought.\n" +
             "USER REFLECTION: '%s'\n" +

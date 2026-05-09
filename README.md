@@ -20,38 +20,35 @@ Siel is a polyglot monorepo consisting of three specialized modules:
 ### 2. Metadata Kernel (`/Siel_Spring`)
 - **Stack:** Java 17, Spring Boot, Maven Wrapper.
 - **Role:** Bulk EXIF metadata extraction (GPS, timestamps).
-- **Logic:** Uses `ParallelStream` for high-efficiency processing and clusters data into time-bound buckets based on the user's chosen cadence.
+- **Logic:** Uses `ParallelStream` for high-efficiency processing and clusters data into time-bound buckets.
 
 ### 3. Sentiment & UI (`/Siel_React`)
 - **Stack:** React, Vite, Vanilla CSS.
 - **Role:** The primary user interface.
 - **Features:** 
   - A sleek 1-5 star survey (Energy, Social, Stress).
-  - Dynamic reflective prompts that change based on whether you are in a Bi-Weekly or Monthly cycle.
   - **Aesthetic:** "Peach Skyline" — a serene, card-based light-mode theme.
 
 ---
 
-## Installation & Compilation
+## Installation & Setup
 
-Siel is designed to be **fully portable**. It includes a local JDK and Maven Wrapper, so you do not need to install Java or Maven on your system.
+### 1. Security Configuration
+Before running the services, you must configure your environment:
+- **Root `.env`**: Set `GEMINI_API_KEY` with a valid key from Google Cloud.
+- **Auth `.env`**: Set a strong `COOKIE_SECRET` (min 32 chars).
+- **Spring `application.properties`**: Optionally set `SIEL_KERNEL_BEARER_TOKEN` for API protection.
 
-### 1. Prerequisites
-- [Node.js](https://nodejs.org/) (v18+)
-
-### 2. Unified Build
-Compile the entire suite (Auth, Spring Boot, and React) with a single command from the root:
+### 2. Compilation
+Compile the entire suite with a single command from the root:
 
 ```bash
-# Install all dependencies
 npm run install:all
-
-# Compile all modules into production bundles
 npm run build:all
 ```
 
-### 3. Running the Services
-Start the individual components in separate terminal windows:
+### 3. Running Services
+Start individual components:
 - **Auth:** `npm run dev:auth`
 - **Frontend:** `npm run dev:react`
 - **Kernel:** `npm run dev:spring`
@@ -59,8 +56,9 @@ Start the individual components in separate terminal windows:
 ---
 
 ## Security & Privacy Notes
-- **Data Locality:** All photo processing is internal. 
-- **Security Logic:** Auth uses Argon2id for hashing and timing-safe verification to prevent enumeration attacks.
+- **Data Locality:** Raw photo binaries never leave your machine.
+- **AI Processing:** Siel uses the Gemini API for multimodal synthesis. While raw photos are not uploaded, base64-encoded visual context and metadata are sent to Google's generative AI services over encrypted HTTPS.
+- **Auth Security:** Implements Argon2id hashing, RS256 JWT signing, refresh token rotation, and constant-time token verification to prevent timing attacks.
 
 ---
 <!-- *Created with care by Antigravity.* -->

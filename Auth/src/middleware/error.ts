@@ -34,6 +34,9 @@ export function errorHandler(
     return reply.code(statusCode).send({ error: 'Error' })
   }
 
+  // DEVELOPMENT ONLY: Send detailed error information to aid debugging.
+  // CRITICAL: Ensure NODE_ENV is set to 'production' in all deployed environments 
+  // to prevent leaking internal system details via err.message and err.code.
   return reply.code(statusCode).send({
     statusCode,
     error: err.name,

@@ -11,6 +11,14 @@ const GalleryUpload = ({ onComplete, canGoForward, onForward }) => {
   const [progress, setProgress] = useState(0);
   const [files, setFiles] = useState([]);
   const [excludedCount, setExcludedCount] = useState(0);
+  const [cadence, setCadence] = useState(localStorage.getItem('siel_cadence') || 'biweekly');
+
+  const updateCadence = (newCadence) => {
+    setCadence(newCadence);
+    localStorage.setItem('siel_cadence', newCadence);
+    // If files are already selected, we could re-filter, but for now 
+    // let's just update the state so the next upload uses it.
+  };
 
   // Extracts only metadata needed for synthesis; image bytes are never persisted here.
   const extractMetadata = (file) => {
@@ -32,8 +40,8 @@ const GalleryUpload = ({ onComplete, canGoForward, onForward }) => {
   // Filters files by selected cadence window, then runs metadata extraction.
   const handleFileChange = async (e) => {
     const selectedFiles = Array.from(e.target.files);
-    const cadence = localStorage.getItem('siel_cadence') || 'biweekly';
-    const daysLimit = cadence === 'monthly' ? 30 : 14;
+    const activeCadence = cadence;
+    const daysLimit = activeCadence === 'monthly' ? 30 : 14;
     const timeLimit = Date.now() - (daysLimit * 24 * 60 * 60 * 1000);
 
     const validFiles = selectedFiles.filter(file => file.lastModified >= timeLimit);
@@ -63,7 +71,25 @@ const GalleryUpload = ({ onComplete, canGoForward, onForward }) => {
   return (
     <div className="gallery-container">
       <h2>Upload</h2>
-      <p className="subtitle">Select photos to extract local metadata.</p>
+      <p className="subtitle">Select your cadence and photos to extract local metadata.</p>
+
+      <div className="cadence-toggle-container">
+        <div className="header-tabs">
+          <div className={`tab-slider ${cadence === 'monthly' ? 'right' : ''}`} />
+          <button 
+            className={`tab-btn ${cadence === 'biweekly' ? 'active' : ''}`}
+            onClick={() => updateCadence('biweekly')}
+          >
+            TWO-WEEK
+          </button>
+          <button 
+            className={`tab-btn ${cadence === 'monthly' ? 'active' : ''}`}
+            onClick={() => updateCadence('monthly')}
+          >
+            MONTHLY
+          </button>
+        </div>
+      </div>
       
       <div className={`drop-zone ${files.length > 0 ? 'has-files' : ''}`}>
         <input 
@@ -77,7 +103,7 @@ const GalleryUpload = ({ onComplete, canGoForward, onForward }) => {
           <p>{uploading ? `Extracting ${progress}%` : files.length > 0 ? `${files.length} photos accepted` : 'Click to select gallery photos'}</p>
           {excludedCount > 0 && (
             <p className="excluded-hint">
-              {excludedCount} photos excluded (outside your {localStorage.getItem('siel_cadence') || 'biweekly'} window)
+              {excludedCount} photos excluded (outside your {cadence} window)
             </p>
           )}
         </div>

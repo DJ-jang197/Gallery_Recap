@@ -13,7 +13,7 @@ const SynthesisResult = ({ content, onComplete, onRegenerate, onBack, isLoading 
     "Stunning flicks you got here!",
     "Connecting the dots between your photos...",
     "Gathering thoughts for your reflection...",
-    "Almost ready! I want to see what I've got..."
+    "Almost ready! We want to see what we've got..."
   ];
 
   useEffect(() => {

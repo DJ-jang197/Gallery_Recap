@@ -156,8 +156,8 @@ html, body {
 
 .logout-btn {
   padding: 10px 24px;
-  background: var(--sky-blue);
-  border: 1px solid var(--deep-slate);
+  background: var(--pale-cyan);
+  border: none;
   color: var(--deep-slate);
   border-radius: 12px;
   font-size: 13px;
@@ -165,6 +165,7 @@ html, body {
   cursor: pointer;
   transition: all 0.3s ease;
   z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .logout-btn:hover {

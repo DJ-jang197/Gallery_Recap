@@ -42,20 +42,9 @@ export function buildApp(): FastifyInstance {
     prefix: '/',
   })
 
-  // Serve user-provided image assets uploaded via Cursor workspace storage.
-  app.register(fastifyStatic, {
-    root: path.join(
-      'C:',
-      'Users',
-      'ForDa',
-      '.cursor',
-      'projects',
-      'c-Code-Related-Works-VS-Code-Personal-Auth-Auth',
-      'assets',
-    ),
-    prefix: '/ui-assets/',
-    decorateReply: false,
-  })
+  // NOTE: Previously served user assets from a hardcoded local path.
+  // Removed for security — hardcoded filesystem paths expose machine structure
+  // and break portability. Place any UI assets in Auth/public/ instead.
 
   // Hosted auth UI entry point.
   app.get('/login', async (_, reply) => {
