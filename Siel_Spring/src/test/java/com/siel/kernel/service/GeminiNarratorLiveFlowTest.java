@@ -13,8 +13,10 @@ import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,6 +35,9 @@ public class GeminiNarratorLiveFlowTest {
     @Test
     void synthesizeNarrative_sendsImagesAndParsesGeminiResponse() throws Exception {
         AtomicReference<String> firstCapturedRequestBody = new AtomicReference<>("");
+        AtomicInteger callCount = new AtomicInteger(0);
+        String longCompleteDraft = String.join(" ", Collections.nCopies(180, "moment")) + ".";
+        String escapedDraft = longCompleteDraft.replace("\\", "\\\\").replace("\"", "\\\"");
 
         server = HttpServer.create(new InetSocketAddress(0), 0);
         server.createContext("/v1beta/models/gemini-2.5-flash:generateContent", new HttpHandler() {
@@ -42,21 +47,24 @@ public class GeminiNarratorLiveFlowTest {
                 if (firstCapturedRequestBody.get().isEmpty()) {
                     firstCapturedRequestBody.set(new String(req, StandardCharsets.UTF_8));
                 }
+                callCount.incrementAndGet();
+
+                String textJson = "{\"text\":\"" + escapedDraft + "\"}";
 
                 String response = """
                         {
                           "candidates": [
                             {
+                              "finishReason": "STOP",
                               "content": {
                                 "parts": [
-                                  {"text":"I remember the warm afternoon in Austin, "},
-                                  {"text":"and how calm I felt afterward."}
+                                  %s
                                 ]
                               }
                             }
                           ]
                         }
-                        """;
+                        """.formatted(textJson);
                 exchange.getResponseHeaders().add("Content-Type", "application/json");
                 byte[] bytes = response.getBytes(StandardCharsets.UTF_8);
                 exchange.sendResponseHeaders(200, bytes.length);
@@ -86,7 +94,8 @@ public class GeminiNarratorLiveFlowTest {
         );
 
         String narrative = service.synthesizeNarrative(scores, "I felt grounded.", metadata, images);
-        assertEquals("I remember the warm afternoon in Austin, and how calm I felt afterward.", narrative);
+        assertEquals(longCompleteDraft, narrative);
+        assertEquals(1, callCount.get());
 
         String outbound = firstCapturedRequestBody.get();
         assertFalse(outbound.isBlank());

@@ -22,6 +22,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class GeminiNarratorService {
     private static final String FALLBACK_NOTICE_PREFIX = "[mock-template]";
+
+    private static final class GeminiCallResult {
+        final String text;
+        final String finishReason;
+
+        GeminiCallResult(String text, String finishReason) {
+            this.text = text;
+            this.finishReason = finishReason == null ? "" : finishReason;
+        }
+    }
     
     private static final Map<String, String> BIBLE_VERSES = Map.of(
         "Peaceful", "\"He leads me beside still waters. He restores my soul.\" - Psalm 23:2-3",
@@ -75,7 +85,22 @@ public class GeminiNarratorService {
             boolean includeImages = images != null && !images.isEmpty();
             String prompt = buildPrompt(scores, reflection, metadata, includeImages);
             System.out.println("[Siel Kernel] Sending Visual Prompt to Gemini...");
-            String narrative = callGemini(prompt, cleanKey, images);
+            GeminiCallResult first = callGemini(prompt, cleanKey, images);
+            String narrative = first.text;
+            if (narrative != null && !narrative.startsWith("Error:") && shouldRunExpansionPass(first.finishReason, narrative)) {
+                try {
+                    GeminiCallResult expanded = callGemini(
+                            buildExpansionPrompt(narrative),
+                            cleanKey,
+                            List.of()
+                    );
+                    if (expanded.text != null && !expanded.text.isBlank() && !expanded.text.startsWith("Error:")) {
+                        narrative = expanded.text.trim();
+                    }
+                } catch (Exception expandEx) {
+                    System.err.println("[Siel Kernel] Expansion pass failed (using primary draft): " + expandEx.getMessage());
+                }
+            }
 
             // Append dynamic bible verse if requested
             if (scores != null && Boolean.TRUE.equals(scores.get("wantsVerse"))) {
@@ -184,7 +209,7 @@ public class GeminiNarratorService {
         return payload;
     }
 
-    private String callGemini(String prompt, String cleanKey, List<Map<String, String>> images) throws Exception {
+    private GeminiCallResult callGemini(String prompt, String cleanKey, List<Map<String, String>> images) throws Exception {
         if (apiUrl == null || apiUrl.isBlank()) {
             throw new IllegalStateException("Gemini API URL is not configured.");
         }
@@ -202,7 +227,7 @@ public class GeminiNarratorService {
             conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
             conn.setRequestProperty("Accept", "application/json");
             conn.setConnectTimeout(30000);
-            conn.setReadTimeout(60000);
+            conn.setReadTimeout(120000);
             conn.setDoOutput(true);
 
             try (OutputStream os = conn.getOutputStream()) {
@@ -235,12 +260,26 @@ public class GeminiNarratorService {
 
             JsonNode root = objectMapper.readTree(response);
             String narrativeText = extractNarrativeText(root);
+            String finishReason = extractFinishReason(root);
             if (narrativeText == null || narrativeText.isBlank()) {
-                return "Error: AI response malformed.";
+                return new GeminiCallResult("Error: AI response malformed.", finishReason);
             }
-            return narrativeText.trim();
+            return new GeminiCallResult(narrativeText.trim(), finishReason);
         }
         throw new Exception("Max retries exceeded");
+    }
+
+    String extractFinishReason(JsonNode root) {
+        JsonNode candidates = root.path("candidates");
+        if (!candidates.isArray() || candidates.isEmpty()) {
+            return "";
+        }
+        JsonNode first = candidates.get(0);
+        JsonNode fr = first.get("finishReason");
+        if (fr != null && !fr.isNull()) {
+            return fr.asText("");
+        }
+        return "";
     }
 
     private boolean isQuotaOrRateLimitError(Exception e) {
@@ -349,11 +388,29 @@ public class GeminiNarratorService {
 
     String buildExpansionPrompt(String draft) {
         return "Rewrite and expand the following first-person draft into a complete reflection log entry. " +
-                "Use plain language, keep it realistic, chronological, and grounded in concrete actions. " +
+                "Use casual, friendly everyday language—like talking to a friend—not formal or literary prose. " +
+                "Keep it realistic, chronological, and grounded in concrete observations. " +
                 "No analogies, symbolism, or poetic phrasing. " +
                 "Target 240-360 words across 3-5 paragraphs. " +
                 "CRITICAL: You MUST finish the last sentence. Do not stop until the thought is complete and ended with punctuation.\n\n" +
                 "DRAFT:\n" + (draft == null ? "" : draft);
+    }
+
+    /**
+     * Second-pass expansion when the model stopped early or produced an incomplete draft.
+     */
+    boolean shouldRunExpansionPass(String finishReason, String narrative) {
+        if (narrative == null || narrative.isBlank()) {
+            return false;
+        }
+        if (narrative.startsWith("Error:")) {
+            return false;
+        }
+        String reason = finishReason == null ? "" : finishReason.toUpperCase();
+        if ("MAX_TOKENS".equals(reason) || "LENGTH".equals(reason)) {
+            return true;
+        }
+        return shouldExpandDraft(narrative);
     }
 
     private String selectVerse(Map<String, Object> scores) {

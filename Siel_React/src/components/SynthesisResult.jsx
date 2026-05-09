@@ -6,6 +6,7 @@ import './SynthesisResult.css';
  * Allows user to edit the text directly.
  */
 const SynthesisResult = ({ content, onComplete, onRegenerate, onBack, isLoading = false }) => {
+  const [editableContent, setEditableContent] = useState('');
   const [messageIndex, setMessageIndex] = useState(0);
   const loadingMessages = [
     "Siel is leafing through your memories...",

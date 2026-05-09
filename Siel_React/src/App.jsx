@@ -31,8 +31,8 @@ function App() {
   const [metadataList, setMetadataList] = useState([]);
   const [photoFiles, setPhotoFiles] = useState([]);
 
-  // Privacy-first default: send only EXIF-derived metadata unless explicitly enabled.
-  const includeImages = import.meta.env.VITE_INCLUDE_IMAGES === 'true';
+  // Send images to Gemini by default for real visual grounding; set VITE_INCLUDE_IMAGES=false to send metadata only.
+  const includeImages = import.meta.env.VITE_INCLUDE_IMAGES !== 'false';
 
   // Advances flow to survey once upload metadata extraction is complete.
   const handleUploadComplete = (extractedMetadata, originalFiles) => {
@@ -64,7 +64,7 @@ function App() {
 
     try {
       const controller = new AbortController();
-      const timeoutMs = 45000;
+      const timeoutMs = 120000;
       const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
 
       const imagesPayload = includeImages

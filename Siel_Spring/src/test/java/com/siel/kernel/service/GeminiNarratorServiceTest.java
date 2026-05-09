@@ -14,6 +14,34 @@ public class GeminiNarratorServiceTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
+    void extractFinishReason_readsCandidateField() throws Exception {
+        String mockGeminiJson = """
+                {
+                  "candidates": [
+                    {
+                      "finishReason": "MAX_TOKENS",
+                      "content": { "parts": [ { "text": "Partial." } ] }
+                    }
+                  ]
+                }
+                """;
+
+        JsonNode root = objectMapper.readTree(mockGeminiJson);
+        GeminiNarratorService service = new GeminiNarratorService();
+
+        assertEquals("MAX_TOKENS", service.extractFinishReason(root));
+    }
+
+    @Test
+    void shouldRunExpansionPass_trueForMaxTokensOrIncompleteDraft() {
+        GeminiNarratorService service = new GeminiNarratorService();
+
+        assertTrue(service.shouldRunExpansionPass("MAX_TOKENS", "Short."));
+        assertFalse(service.shouldRunExpansionPass("STOP", "Error: AI response malformed."));
+        assertTrue(service.shouldRunExpansionPass("STOP", "Only nine words here ending now."));
+    }
+
+    @Test
     void extractNarrativeText_concatenatesAllTextParts() throws Exception {
         String mockGeminiJson = """
                 {
@@ -57,13 +85,13 @@ public class GeminiNarratorServiceTest {
 
         String prompt = service.buildPrompt(scores, reflection, metadata, false);
 
-        assertTrue(prompt.contains("VIBE WORDS: Joyful, Quiet"));
+        assertTrue(prompt.contains("VIBE: Joyful, Quiet"));
         assertTrue(prompt.contains("ENERGY: 4/5"));
         assertTrue(prompt.contains("SOCIAL: 2/5"));
         assertTrue(prompt.contains("STRESS: 3/5"));
         assertTrue(prompt.contains("USER REFLECTION: 'I kept thinking about home.'"));
         assertFalse(prompt.contains("Use the attached photos and the metadata"));
-        assertTrue(prompt.contains("Use the metadata to infer what the day felt like"));
+        assertTrue(prompt.contains("Use the metadata to infer what the period felt like"));
     }
 
     @Test
